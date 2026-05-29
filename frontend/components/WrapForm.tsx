@@ -60,6 +60,7 @@ export function WrapForm() {
           tokenAddress: matched.tokenAddress,
           confidentialTokenAddress: matched.confidentialTokenAddress,
           isValid: matched.isValid,
+          decimals: matched.decimals,
         });
       }
     }
@@ -73,6 +74,7 @@ export function WrapForm() {
         tokenAddress: first.tokenAddress,
         confidentialTokenAddress: first.confidentialTokenAddress,
         isValid: first.isValid,
+        decimals: first.decimals,
       });
     }
   }, [state.selectedPair, erc20Param, selectPair]);
@@ -168,6 +170,7 @@ export function WrapForm() {
                     tokenAddress: pair.tokenAddress,
                     confidentialTokenAddress: pair.confidentialTokenAddress,
                     isValid: pair.isValid,
+                    decimals: pair.decimals,
                   })
                 }
                 className={cn(

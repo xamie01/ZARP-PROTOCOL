@@ -10,7 +10,7 @@
  * See: references/zama-sdk-react.md (Next.js SSR / App Router)
  */
 
-import React, { type ReactNode } from "react";
+import React, { type ReactNode, useState, useEffect, useMemo } from "react";
 import { WagmiProvider, createConfig, http } from "wagmi";
 import { sepolia } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -46,22 +46,6 @@ const wagmiConfig = getDefaultConfig({
   },
 });
 
-/*************** Zama SDK Objects ***************/
-
-const signer = new WagmiSigner({ config: wagmiConfig });
-
-const relayer = new RelayerWeb({
-  getChainId: () => signer.getChainId(),
-  transports: {
-    [SepoliaConfig.chainId]: {
-      ...SepoliaConfig,
-      network: SEPOLIA_RPC_URL,
-      // For Sepolia testnet, relayer is open (no API key needed).
-      // For production/mainnet, point relayerUrl at your backend proxy.
-    },
-  },
-});
-
 /*************** Query Client ***************/
 
 const queryClient = new QueryClient({
@@ -91,6 +75,35 @@ interface FhevmProviderProps {
  * WagmiSigner auto-revokes the FHE session on account change or disconnect.
  */
 export function FhevmProvider({ children }: FhevmProviderProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const signer = useMemo(() => {
+    if (!mounted) return null;
+    return new WagmiSigner({ config: wagmiConfig });
+  }, [mounted]);
+
+  const relayer = useMemo(() => {
+    if (!mounted || !signer) return null;
+    return new RelayerWeb({
+      getChainId: () => signer.getChainId(),
+      transports: {
+        [SepoliaConfig.chainId]: {
+          ...SepoliaConfig,
+          relayerUrl: process.env.NEXT_PUBLIC_ZAMA_RELAYER_URL || SepoliaConfig.relayerUrl,
+          network: SEPOLIA_RPC_URL,
+        },
+      },
+    });
+  }, [mounted, signer]);
+
+  if (!mounted || !signer || !relayer) {
+    return null;
+  }
+
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>

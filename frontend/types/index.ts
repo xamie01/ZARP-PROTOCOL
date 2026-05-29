@@ -15,6 +15,8 @@ export interface TokenPair {
   confidentialTokenAddress: Address;
   /** Whether the wrapper is valid (registered and verified). */
   isValid: boolean;
+  /** Token decimals (optional, defaults to 18 when absent). */
+  decimals?: number;
 }
 
 /** Extended pair with optional on-chain metadata. */

@@ -98,7 +98,8 @@ export const KNOWN_TOKEN_PAIRS = WRAPPER_PAIRS.map((pair) => ({
 /*************** RPC Configuration ***************/
 
 /** Public Sepolia RPC endpoint (CORS-friendly). */
-export const SEPOLIA_RPC_URL = "https://ethereum-sepolia-rpc.publicnode.com";
+export const SEPOLIA_RPC_URL =
+  process.env.NEXT_PUBLIC_SEPOLIA_RPC || "https://ethereum-sepolia-rpc.publicnode.com";
 
 /** WalletConnect project ID placeholder. */
 export const WALLETCONNECT_PROJECT_ID =
