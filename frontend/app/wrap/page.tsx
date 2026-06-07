@@ -1,6 +1,6 @@
 /**
  * @file app/wrap/page.tsx
- * @description Wrap (shield) / Unwrap (unshield) interface page.
+ * @description Wrap (shield) / unwrap page in the new visual system.
  */
 
 import { Suspense } from "react";
@@ -9,40 +9,41 @@ import { WrapForm } from "@/components/WrapForm";
 export default function WrapPage() {
   return (
     <div className="space-y-8">
-      {/* Page Header */}
-      <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-100">
-          Shield & Unshield
-        </h1>
-        <p className="mx-auto max-w-lg text-sm text-slate-400">
-          Convert public ERC-20 tokens to confidential ERC-7984 tokens (shield)
-          or withdraw back to public (unshield).
+      <section className="space-y-3">
+        <span className="section-chip">Wrap</span>
+        <h1 className="text-display-m">Shield and unshield</h1>
+        <p className="max-w-2xl text-sm leading-relaxed text-[#656B73]">
+          Convert public ERC-20 tokens into confidential ERC-7984 balances or
+          withdraw them back to public while keeping the existing backend flow.
         </p>
-      </div>
+      </section>
 
-      {/* Wrap Form */}
-      <Suspense fallback={
-        <div className="mx-auto max-w-lg rounded-2xl border border-slate-800/50 bg-slate-900/30 p-12 text-center text-slate-400 animate-pulse">
-          Loading wrap form...
+      <Suspense
+        fallback={
+          <div className="section-card p-12 text-center text-[#656B73] animate-pulse">
+            Loading wrap form...
+          </div>
+        }
+      >
+        <div className="section-card p-4 sm:p-6">
+          <WrapForm />
         </div>
-      }>
-        <WrapForm />
       </Suspense>
 
-      {/* Info Panel */}
-      <div className="mx-auto max-w-lg rounded-xl border border-slate-800/30 bg-slate-900/20 p-4 text-xs text-slate-500">
-        <p className="mb-2 font-medium text-slate-400">How it works</p>
+      <div className="section-card p-5 text-sm leading-relaxed text-[#656B73]">
+        <p className="mb-3 font-semibold text-[#1A1D20]">How it works</p>
         <ul className="list-inside list-disc space-y-1">
           <li>
-            <strong>Shield:</strong> Approve the wrapper, then deposit your
-            ERC-20 tokens. They become encrypted (confidential).
+            <strong>Shield:</strong> approve the wrapper, then deposit ERC-20
+            tokens to mint confidential balances.
           </li>
           <li>
-            <strong>Unshield:</strong> Two-phase withdrawal. The SDK handles
-            both phases automatically.
+            <strong>Unshield:</strong> use the SDK flow to complete the two-step
+            withdrawal.
           </li>
           <li>
-            Balances are encrypted on-chain. Only you can decrypt them.
+            Balances stay encrypted on-chain and are decrypted only through the
+            existing relayer backend.
           </li>
         </ul>
       </div>

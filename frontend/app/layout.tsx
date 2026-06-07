@@ -1,13 +1,13 @@
 /**
  * @file app/layout.tsx
- * @description Root layout with FhevmProvider, dark theme, and Inter font.
- * This file stays as a Server Component; the providers are client-only.
+ * @description Root layout for the Kimi-styled frontend shell.
  */
 
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { FhevmProvider } from "@/providers/FhevmProvider";
 import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 import "./globals.css";
 
 const inter = Inter({
@@ -23,16 +23,12 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ZARP Registry - Confidential Wrapper Registry",
-  description:
-    "Explore, wrap, and decrypt ERC-7984 confidential tokens on the Zama FHEVM. Built for the Zama Developer Program Bounty Track.",
+  title: "ZARP Protocol",
+  description: "Confidential token wrapping with the existing FHEVM backend.",
   keywords: [
-    "FHEVM",
-    "Zama",
+    "ZARP",
     "ERC-7984",
     "confidential tokens",
-    "FHE",
-    "homomorphic encryption",
     "wrapper registry",
   ],
 };
@@ -43,14 +39,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`dark ${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="min-h-screen bg-slate-950 font-sans antialiased">
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <body className="min-h-screen bg-[var(--color-near-white)] font-sans antialiased text-[#1A1D20]">
         <FhevmProvider>
           <Navigation />
-          <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <main className="section-shell py-8 sm:py-10">
             {children}
           </main>
+          <Footer />
         </FhevmProvider>
+        <div className="noise-overlay" />
       </body>
     </html>
   );

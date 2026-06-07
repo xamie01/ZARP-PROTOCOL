@@ -23,7 +23,6 @@ import {
   Unlock,
   ShieldCheck,
   Eye,
-  ExternalLink,
   AlertCircle,
   CheckCircle2,
   Loader2,
@@ -150,7 +149,6 @@ export function DecryptFlow() {
             const cfg = STEP_CONFIG[key];
             const isActive = i === activeIndex;
             const isComplete = i < activeIndex;
-            const isError = step === "error" && i === 0;
 
             return (
               <React.Fragment key={key}>

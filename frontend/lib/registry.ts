@@ -7,6 +7,30 @@
 import type { Address } from "viem";
 import type { RegistryEntry } from "@/types";
 
+interface PairLike {
+  tokenAddress?: Address;
+  confidentialTokenAddress?: Address;
+  isValid?: boolean;
+  name?: string;
+  symbol?: string;
+  decimals?: number;
+  totalSupply?: bigint;
+}
+
+interface WrappersRegistryLike {
+  listPairs(options: {
+    page: number;
+    pageSize: number;
+    metadata: boolean;
+  }): Promise<{ pairs: PairLike[] }>;
+  getConfidentialToken(
+    tokenAddress: Address
+  ): Promise<{ confidentialTokenAddress?: Address } | null | undefined>;
+  getUnderlyingToken(
+    confidentialAddress: Address
+  ): Promise<{ tokenAddress?: Address } | null | undefined>;
+}
+
 /*************** Registry Helpers ***************/
 
 /**
@@ -25,21 +49,21 @@ import type { RegistryEntry } from "@/types";
  * @returns Paginated list of registry entries.
  */
 export async function fetchRegistryPairs(
-  registry: any,
+  registry: WrappersRegistryLike,
   options: { page?: number; pageSize?: number; metadata?: boolean } = {}
 ): Promise<RegistryEntry[]> {
   const { page = 0, pageSize = 20, metadata = true } = options;
   if (!registry) return [];
 
   const result = await registry.listPairs({ page, pageSize, metadata });
-  return result.pairs.map((pair: any) => ({
+  return result.pairs.map((pair) => ({
     tokenAddress: pair.tokenAddress as Address,
     confidentialTokenAddress: pair.confidentialTokenAddress as Address,
-    isValid: pair.isValid,
-    name: pair.name,
-    symbol: pair.symbol,
-    decimals: pair.decimals,
-    totalSupply: pair.totalSupply,
+    isValid: pair.isValid ?? true,
+    name: pair.name ?? "",
+    symbol: pair.symbol ?? "",
+    decimals: pair.decimals ?? 18,
+    totalSupply: pair.totalSupply ?? 0n,
   }));
 }
 
@@ -51,7 +75,7 @@ export async function fetchRegistryPairs(
  * @returns The confidential wrapper address, or null if not found.
  */
 export async function lookupWrapper(
-  registry: any,
+  registry: WrappersRegistryLike,
   tokenAddress: Address
 ): Promise<Address | null> {
   if (!registry) return null;
@@ -67,7 +91,7 @@ export async function lookupWrapper(
  * @returns The underlying ERC-20 address, or null if not found.
  */
 export async function lookupUnderlying(
-  registry: any,
+  registry: WrappersRegistryLike,
   confidentialAddress: Address
 ): Promise<Address | null> {
   if (!registry) return null;

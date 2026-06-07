@@ -1,6 +1,6 @@
 /**
  * @file app/faucet/page.tsx
- * @description Sepolia cTokenMock faucet page.
+ * @description Faucet page in the new visual system.
  */
 
 import { FaucetPanel } from "@/components/FaucetPanel";
@@ -8,19 +8,18 @@ import { FaucetPanel } from "@/components/FaucetPanel";
 export default function FaucetPage() {
   return (
     <div className="space-y-8">
-      {/* Page Header */}
-      <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-100">
-          Test Token Faucet
-        </h1>
-        <p className="mx-auto max-w-lg text-sm text-slate-400">
-          Request free cTokenMock test tokens on Sepolia. Use them to test
-          shielding, unshielding, and confidential transfers.
+      <section className="space-y-3">
+        <span className="section-chip">Faucet</span>
+        <h1 className="text-display-m">Test tokens</h1>
+        <p className="max-w-2xl text-sm leading-relaxed text-[#656B73]">
+          Request Sepolia mock assets to test shielding, unshielding, and
+          confidential transfer flows.
         </p>
-      </div>
+      </section>
 
-      {/* Faucet Panel */}
-      <FaucetPanel />
+      <div className="section-card p-4 sm:p-6">
+        <FaucetPanel />
+      </div>
     </div>
   );
 }

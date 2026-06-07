@@ -100,11 +100,6 @@ export function WrapForm() {
   const handleMax = () => {
     if (!state.selectedPair) return;
 
-    const matchedPair = KNOWN_TOKEN_PAIRS.find(
-      (p) => p.tokenAddress === state.selectedPair?.tokenAddress
-    );
-    const decimals = matchedPair?.decimals ?? 18;
-
     if (state.mode === "shield") {
       if (erc20Balance !== undefined) {
         setAmount(formattedErc20Balance.replace(/,/g, ""));

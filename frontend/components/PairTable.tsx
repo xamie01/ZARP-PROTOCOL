@@ -48,8 +48,8 @@ function CopyButton({ text }: { text: string }) {
       title="Copy full address"
       className={cn(
         "ml-1.5 inline-flex items-center rounded p-0.5",
-        "text-slate-500 transition-colors hover:text-violet-400",
-        copied && "text-emerald-400"
+        "text-[#A7ACB3] transition-colors hover:text-[#5D5FEF]",
+        copied && "text-[#2ECC71]"
       )}
     >
       {copied ? (
@@ -75,10 +75,10 @@ function CopyButton({ text }: { text: string }) {
 function ChainBadge({ chainId, chainName }: { chainId: number; chainName: string }) {
   const colors =
     chainId === 11155111
-      ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+      ? "bg-[#FFD100]/15 text-[#B78D00] border-[#FFD100]/30"
       : chainId === 1
-        ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
-        : "bg-slate-500/10 text-slate-400 border-slate-500/20";
+        ? "bg-black/10 text-black border-black/15"
+        : "bg-[#F3F4F5] text-[#656B73] border-[#E5E7E9]";
 
   return (
     <span
@@ -108,7 +108,7 @@ function TableSkeleton() {
       {[...Array(5)].map((_, i) => (
         <div
           key={i}
-          className="h-16 animate-shimmer rounded-xl bg-gradient-to-r from-slate-800/50 via-slate-700/50 to-slate-800/50 bg-[length:200%_100%]"
+          className="h-16 animate-shimmer rounded-xl bg-gradient-to-r from-[#F3F4F5] via-[#E5E7E9] to-[#F3F4F5] bg-[length:200%_100%]"
         />
       ))}
     </div>
@@ -119,9 +119,9 @@ function TableSkeleton() {
 
 function EmptyState({ hasSearch }: { hasSearch: boolean }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-700/50 bg-slate-900/20 px-6 py-16">
+    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#CDD0D4] bg-[#F8F9FA] px-6 py-16">
       <svg
-        className="mb-4 h-12 w-12 text-slate-600"
+        className="mb-4 h-12 w-12 text-[#A7ACB3]"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -133,10 +133,10 @@ function EmptyState({ hasSearch }: { hasSearch: boolean }) {
           d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
         />
       </svg>
-      <p className="text-sm font-medium text-slate-400">
+      <p className="text-sm font-medium text-[#4D535A]">
         {hasSearch ? "No pairs match your search" : "No pairs found"}
       </p>
-      <p className="mt-1 text-xs text-slate-500">
+      <p className="mt-1 text-xs text-[#656B73]">
         {hasSearch
           ? "Try adjusting your search query or chain filter"
           : "The registry is empty or unavailable"}
@@ -155,12 +155,12 @@ function PairCard({ pair, onClick }: { pair: DisplayPair; onClick: () => void })
       onClick={onClick}
       onKeyDown={(e) => e.key === "Enter" && onClick()}
       className={cn(
-        "rounded-xl border border-slate-800/50 bg-slate-900/30 p-4",
-        "cursor-pointer transition-all hover:border-violet-500/30 hover:bg-slate-800/30"
+        "rounded-xl border border-[#E5E7E9] bg-white p-4",
+        "cursor-pointer transition-all hover:border-[#FFD100]/40 hover:bg-[#F8F9FA]"
       )}
     >
       <div className="mb-3 flex items-center justify-between">
-        <span className="rounded-md bg-slate-800/50 px-2 py-0.5 font-mono text-sm text-violet-400">
+        <span className="rounded-md bg-[#FFD100]/15 px-2 py-0.5 font-mono text-sm text-black">
           {pair.erc20.symbol}
         </span>
         <ChainBadge chainId={pair.chainId} chainName={pair.chainName} />
@@ -168,18 +168,18 @@ function PairCard({ pair, onClick }: { pair: DisplayPair; onClick: () => void })
 
       <div className="space-y-2 text-xs">
         <div className="flex items-center justify-between">
-          <span className="text-slate-500">ERC-20</span>
+          <span className="text-[#A7ACB3]">ERC-20</span>
           <div className="flex items-center">
-            <span className="font-mono text-slate-400">
+            <span className="font-mono text-[#4D535A]">
               {truncateAddress(pair.erc20.address, 6)}
             </span>
             <CopyButton text={pair.erc20.address} />
           </div>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-slate-500">ERC-7984</span>
+          <span className="text-[#A7ACB3]">ERC-7984</span>
           <div className="flex items-center">
-            <span className="font-mono text-cyan-400/80">
+            <span className="font-mono text-[#5D5FEF]">
               {truncateAddress(pair.erc7984.address, 6)}
             </span>
             <CopyButton text={pair.erc7984.address} />
@@ -187,9 +187,9 @@ function PairCard({ pair, onClick }: { pair: DisplayPair; onClick: () => void })
         </div>
       </div>
 
-      <div className="mt-3 flex items-center justify-between text-xs text-slate-500">
+      <div className="mt-3 flex items-center justify-between text-xs text-[#656B73]">
         <span>{pair.erc7984.symbol}</span>
-        <span className="text-violet-500/60">Click to wrap →</span>
+        <span className="text-[#5D5FEF]">Click to wrap →</span>
       </div>
     </div>
   );
@@ -231,13 +231,13 @@ export function PairTable() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className={cn(
-              "w-full rounded-xl border border-slate-700/50 bg-slate-900/50 px-4 py-3 pl-11",
-              "text-sm text-slate-100 placeholder:text-slate-500",
-              "transition-all focus:border-violet-500/50 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
+              "w-full rounded-xl border border-[#E5E7E9] bg-white px-4 py-3 pl-11",
+              "text-sm text-[#1A1D20] placeholder:text-[#A7ACB3]",
+              "transition-all focus:border-[#FFD100]/70 focus:outline-none focus:ring-2 focus:ring-[#FFD100]/20"
             )}
           />
           <svg
-            className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+            className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#A7ACB3]"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -257,9 +257,9 @@ export function PairTable() {
           value={chainFilter}
           onChange={(e) => setChainFilter(e.target.value as ChainFilter)}
           className={cn(
-            "rounded-xl border border-slate-700/50 bg-slate-900/50 px-4 py-3",
-            "text-sm text-slate-100",
-            "transition-all focus:border-violet-500/50 focus:outline-none focus:ring-2 focus:ring-violet-500/20",
+            "rounded-xl border border-[#E5E7E9] bg-white px-4 py-3",
+            "text-sm text-[#1A1D20]",
+            "transition-all focus:border-[#FFD100]/70 focus:outline-none focus:ring-2 focus:ring-[#FFD100]/20",
             "sm:w-44"
           )}
         >
@@ -282,55 +282,55 @@ export function PairTable() {
       {/* Desktop Table */}
       {!isLoading && filteredPairs.length > 0 && (
         <>
-          <div className="hidden overflow-hidden rounded-xl border border-slate-800/50 bg-slate-900/30 md:block">
+          <div className="hidden overflow-hidden rounded-xl border border-[#E5E7E9] bg-white md:block">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-slate-800/50 text-left">
-                  <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-slate-500">
+              <tr className="border-b border-[#E5E7E9] text-left">
+                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#A7ACB3]">
                     ERC-20 Symbol
                   </th>
-                  <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-slate-500">
+                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#A7ACB3]">
                     ERC-20 Address
                   </th>
-                  <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-slate-500">
+                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#A7ACB3]">
                     ERC-7984 Symbol
                   </th>
-                  <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-slate-500">
+                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#A7ACB3]">
                     ERC-7984 Address
                   </th>
-                  <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-slate-500">
+                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#A7ACB3]">
                     Chain
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/30">
+            <tbody className="divide-y divide-[#F3F4F5]">
                 {filteredPairs.map((pair) => (
                   <tr
                     key={`${pair.erc20.address}-${pair.chainId}`}
                     onClick={() => handleRowClick(pair)}
-                    className="cursor-pointer transition-colors hover:bg-slate-800/20"
+                    className="cursor-pointer transition-colors hover:bg-[#F8F9FA]"
                   >
                     <td className="px-4 py-3">
-                      <span className="rounded-md bg-slate-800/50 px-2 py-0.5 font-mono text-sm text-violet-400">
+                      <span className="rounded-md bg-[#FFD100]/15 px-2 py-0.5 font-mono text-sm text-black">
                         {pair.erc20.symbol}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center">
-                        <span className="font-mono text-xs text-slate-400">
+                        <span className="font-mono text-xs text-[#4D535A]">
                           {truncateAddress(pair.erc20.address, 6)}
                         </span>
                         <CopyButton text={pair.erc20.address} />
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="rounded-md bg-cyan-900/20 px-2 py-0.5 font-mono text-sm text-cyan-400">
+                      <span className="rounded-md bg-[#5D5FEF]/10 px-2 py-0.5 font-mono text-sm text-[#5D5FEF]">
                         {pair.erc7984.symbol}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center">
-                        <span className="font-mono text-xs text-cyan-400/80">
+                        <span className="font-mono text-xs text-[#00B4D8]">
                           {truncateAddress(pair.erc7984.address, 6)}
                         </span>
                         <CopyButton text={pair.erc7984.address} />
@@ -357,7 +357,7 @@ export function PairTable() {
           </div>
 
           {/* Result Count */}
-          <div className="text-sm text-slate-500">
+          <div className="text-sm text-[#656B73]">
             Showing {filteredPairs.length} pair{filteredPairs.length !== 1 ? "s" : ""}
           </div>
         </>

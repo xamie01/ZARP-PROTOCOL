@@ -17,6 +17,17 @@ import type { Address, Hex } from "viem";
 import type { DecryptHandle } from "@/types";
 import { NoCiphertextError, ReadonlyToken } from "@zama-fhe/sdk";
 
+interface ZamaSDKLike {
+  allow(contractAddresses: Address[]): Promise<void>;
+  userDecrypt(
+    handles: Array<{ handle: Hex; contractAddress: Address }>
+  ): Promise<Record<Hex, bigint>>;
+}
+
+interface BalanceTokenLike {
+  balanceOf(): Promise<bigint>;
+}
+
 /*************** Session Authorization ***************/
 
 /**
@@ -26,7 +37,7 @@ import { NoCiphertextError, ReadonlyToken } from "@zama-fhe/sdk";
  * @param contractAddresses - Array of contract addresses to authorize.
  */
 export async function authorizeContracts(
-  sdk: any,
+  sdk: ZamaSDKLike,
   contractAddresses: Address[]
 ): Promise<void> {
   if (!sdk) throw new Error("SDK is not initialized");
@@ -43,7 +54,7 @@ export async function authorizeContracts(
  * @returns Record mapping handle hex to decrypted value.
  */
 export async function decryptHandles(
-  sdk: any,
+  sdk: ZamaSDKLike,
   handles: DecryptHandle[]
 ): Promise<Record<Hex, bigint>> {
   if (!sdk) return {};
@@ -61,7 +72,7 @@ export async function decryptHandles(
  * @param token - Token or ReadonlyToken instance.
  * @returns Decrypted balance as bigint.
  */
-export async function decryptBalance(token: any): Promise<bigint> {
+export async function decryptBalance(token: BalanceTokenLike): Promise<bigint> {
   if (!token) throw new Error("Token instance is not initialized");
   try {
     return await token.balanceOf();
@@ -78,6 +89,6 @@ export async function decryptBalance(token: any): Promise<bigint> {
  *
  * @param tokens - Array of ReadonlyToken instances.
  */
-export async function batchAuthorizeTokens(tokens: any[]): Promise<void> {
+export async function batchAuthorizeTokens(tokens: ReadonlyToken[]): Promise<void> {
   await ReadonlyToken.allow(...tokens);
 }

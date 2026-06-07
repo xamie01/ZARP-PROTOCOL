@@ -5,9 +5,9 @@
  * @description Sepolia cTokenMock faucet panel dashboard for requesting test tokens.
  */
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useAccount, useReadContracts, useWriteContract, usePublicClient } from "wagmi";
-import type { Address, Hex } from "viem";
+import type { Address } from "viem";
 import { useFaucet } from "@/hooks/useFaucet";
 import { cn, truncateAddress, formatTokenAmount } from "@/lib/utils";
 import { CTOKEN_MOCKS, FAUCET_AMOUNT } from "@/lib/registry-data";

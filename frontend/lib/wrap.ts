@@ -6,6 +6,32 @@
 
 import type { Address, Hex } from "viem";
 
+interface TokenLike {
+  shield(
+    amount: bigint,
+    options: {
+      approvalStrategy: "exact";
+      onApprovalSubmitted?: (txHash: Hex) => void;
+      onShieldSubmitted?: (txHash: Hex) => void;
+    }
+  ): Promise<{ txHash: Hex }>;
+  unshield(
+    amount: bigint,
+    options: {
+      onUnwrapSubmitted?: (txHash: Hex) => void;
+      onFinalizing?: () => void;
+      onFinalizeSubmitted?: (txHash: Hex) => void;
+    }
+  ): Promise<{ txHash: Hex }>;
+  resumeUnshield(unwrapTxHash: Hex): Promise<{ txHash: Hex }>;
+}
+
+interface RegistryLike {
+  getConfidentialToken(
+    tokenAddress: Address
+  ): Promise<{ confidentialTokenAddress?: Address } | null | undefined>;
+}
+
 /*************** Shield Helpers ***************/
 
 /**
@@ -33,7 +59,7 @@ import type { Address, Hex } from "viem";
  * @returns Transaction hash of the shield operation.
  */
 export async function shieldTokens(
-  token: any,
+  token: TokenLike,
   amount: bigint,
   callbacks?: {
     onApprovalSubmitted?: (txHash: Hex) => void;
@@ -60,7 +86,7 @@ export async function shieldTokens(
  * @returns Transaction hash of the finalize operation.
  */
 export async function unshieldTokens(
-  token: any,
+  token: TokenLike,
   amount: bigint,
   callbacks?: {
     onUnwrapSubmitted?: (txHash: Hex) => void;
@@ -87,7 +113,7 @@ export async function unshieldTokens(
  * @returns Transaction hash of the resumed finalize.
  */
 export async function resumeUnshield(
-  token: any,
+  token: TokenLike,
   unwrapTxHash: Hex
 ): Promise<Hex> {
   if (!token) throw new Error("Token instance is not initialized");
@@ -103,7 +129,7 @@ export async function resumeUnshield(
  * @returns Wrapper address or null.
  */
 export async function resolveWrapper(
-  registry: any,
+  registry: RegistryLike,
   tokenAddress: Address
 ): Promise<Address | null> {
   if (!registry) return null;
