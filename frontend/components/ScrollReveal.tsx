@@ -1,28 +1,39 @@
 "use client";
 
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
 
 interface ScrollRevealProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
-  delay?: number;
   direction?: "up" | "left" | "right";
-  threshold?: number;
+  delay?: number;
 }
 
-export function ScrollReveal({
+export default function ScrollReveal({
   children,
-  className,
-  delay = 0,
+  className = "",
   direction = "up",
-  threshold = 0.15,
+  delay = 0,
 }: ScrollRevealProps) {
-  const ref = useScrollReveal<HTMLDivElement>({ delay, direction, threshold });
+  const { ref, isVisible } = useScrollReveal();
+
+  const hiddenClass =
+    direction === "left"
+      ? "reveal-left"
+      : direction === "right"
+      ? "reveal-right"
+      : "reveal-hidden";
 
   return (
-    <div ref={ref} className={cn(className)}>
+    <div
+      ref={ref}
+      className={`${isVisible ? "reveal-visible" : hiddenClass} ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
       {children}
     </div>
   );
 }
+
+export { ScrollReveal };

@@ -1,219 +1,361 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  Coins,
-  ExternalLink,
-  Lock,
-  Shield,
-  Sparkles,
-} from "lucide-react";
-import { PairTable } from "@/components/PairTable";
-import { ScrollReveal } from "@/components/ScrollReveal";
-import { WRAPPER_PAIRS } from "@/lib/registry-data";
+import { ChevronDown, Shield, Lock, ExternalLink, Check, Copy } from "lucide-react";
+import dynamic from "next/dynamic";
+import SectionTitle from "@/components/SectionTitle";
+import ScrollReveal from "@/components/ScrollReveal";
+
+const ShieldSphere = dynamic(() => import("@/components/ShieldSphere"), { ssr: false });
+
+const TOKEN_PAIRS = [
+  { id: 1, erc20Symbol: "USDCMock", erc20Address: "0x9b5Cd1...8aDFfF", erc7984Symbol: "cUSDCMock", erc7984Address: "0x7c5BF4...223639", chain: "Sepolia" },
+  { id: 2, erc20Symbol: "USDTMock", erc20Address: "0xa7dA08...e8e9b0", erc7984Symbol: "cUSDTMock", erc7984Address: "0x4E7B06...554491", chain: "Sepolia" },
+  { id: 3, erc20Symbol: "WETHMock", erc20Address: "0xff5473...9A5f3F", erc7984Symbol: "cWETHMock", erc7984Address: "0x462086...d83158", chain: "Sepolia" },
+  { id: 4, erc20Symbol: "BRONMock", erc20Address: "0xFf021f...DEb25E", erc7984Symbol: "cBRONMock", erc7984Address: "0xaa5612...F9C891", chain: "Sepolia" },
+  { id: 5, erc20Symbol: "ZAMAMock", erc20Address: "0x75355a...a0BF57", erc7984Symbol: "cZAMAMock", erc7984Address: "0xf2D628...8FfbFB", chain: "Sepolia" },
+];
 
 const features = [
   {
     icon: Shield,
-    title: "Shield tokens",
-    description: "Wrap ERC-20 assets into confidential ERC-7984 balances with the existing backend.",
-    href: "/wrap",
+    iconColor: "text-[#FFD100]",
+    title: "Shield Tokens",
+    description: "Convert your public ERC-20 tokens into confidential ERC-7984 tokens. Your balances and transactions become encrypted on-chain, visible only to you.",
+    link: { text: "Start Wrapping", href: "/wrap" },
   },
   {
     icon: Lock,
-    title: "Decrypt balances",
-    description: "Authorize the relayer once and reveal confidential balances client-side.",
-    href: "/decrypt",
+    iconColor: "text-[#5D5FEF]",
+    title: "Decrypt Balances",
+    description: "Reveal your confidential token balances using EIP-712 signatures. Decryption happens client-side — your private keys never leave your device.",
+    link: { text: "Decrypt Now", href: "/decrypt" },
   },
   {
-    icon: Coins,
-    title: "Claim test tokens",
-    description: "Use the faucet to get Sepolia mock assets for wrapping and unwrapping flows.",
-    href: "/faucet",
+    icon: ExternalLink,
+    iconColor: "text-[#00B4D8]",
+    title: "ERC-7984 Standard",
+    description: "Built on the ERC-7984 token standard for confidential assets. Fully compatible with existing ERC-20 infrastructure while adding programmable privacy.",
+    link: { text: "Learn More", href: "#" },
   },
 ];
 
 const steps = [
   {
     number: "01",
-    title: "Connect your wallet",
-    description: "Use RainbowKit to connect, then the FHEVM provider handles sessions and relayer access.",
+    title: "Connect Your Wallet",
+    description: "Link your Web3 wallet to the ZARP Protocol. We support MetaMask, WalletConnect, and Coinbase Wallet.",
+    side: "left" as const,
   },
   {
     number: "02",
-    title: "Pick a token pair",
-    description: "Browse the registry and select the underlying ERC-20 and confidential wrapper pair.",
+    title: "Select Your Token",
+    description: "Choose from the registry of supported ERC-20 tokens. Each token has a corresponding confidential ERC-7984 wrapper.",
+    side: "right" as const,
   },
   {
     number: "03",
-    title: "Wrap or decrypt",
-    description: "Keep the previous backend flows for shield, unshield, and balance decryption.",
+    title: "Shield & Go Private",
+    description: "Approve the wrapper contract and deposit your tokens. They instantly become encrypted on-chain. Only you can see your balances and transactions.",
+    side: "left" as const,
   },
 ];
 
+const codeLines = [
+  { num: 1, content: "// Import the ZARP SDK", type: "comment" },
+  { num: 2, content: "import { ZarpSDK } from '@zarp/protocol-sdk';", type: "code" },
+  { num: 3, content: "", type: "empty" },
+  { num: 4, content: "// Initialize the SDK", type: "comment" },
+  { num: 5, content: "const zarp = new ZarpSDK({", type: "code" },
+  { num: 6, content: "  network: 'sepolia',", type: "code" },
+  { num: 7, content: "  provider: window.ethereum", type: "code" },
+  { num: 8, content: "});", type: "code" },
+  { num: 9, content: "", type: "empty" },
+  { num: 10, content: "// Shield 100 USDC", type: "comment" },
+  { num: 11, content: "const tx = await zarp.shield({", type: "code" },
+  { num: 12, content: "  token: '0x9b5Cd1...8aDFfF',", type: "code" },
+  { num: 13, content: "  amount: '100000000'", type: "code" },
+  { num: 14, content: "});", type: "code" },
+];
+
+const techFeatures = [
+  {
+    icon: Shield,
+    iconColor: "text-[#FFD100]",
+    title: "EIP-712 Signatures",
+    description: "Secure off-chain signature authorization for balance decryption. No private key exposure.",
+  },
+  {
+    icon: Lock,
+    iconColor: "text-[#5D5FEF]",
+    title: "Client-Side Decryption",
+    description: "All decryption happens in your browser. Encrypted balances are never exposed to our servers.",
+  },
+  {
+    icon: ExternalLink,
+    iconColor: "text-[#00B4D8]",
+    title: "ERC-7984 Compliant",
+    description: "Fully compatible with the emerging standard for confidential tokens on EVM chains.",
+  },
+  {
+    icon: Check,
+    iconColor: "text-[#2ECC71]",
+    title: "Two-Phase Unshielding",
+    description: "Secure withdrawal process with automatic phase handling by the SDK. No manual steps required.",
+  },
+];
+
+function getLineColor(type: string, content: string) {
+  if (type === "comment") return "text-[#A7ACB3]";
+  if (type === "empty") return "";
+  if (content.includes("import") || content.includes("const") || content.includes("await") || content.includes("from") || content.includes("new"))
+    return "text-[#FFD100]";
+  if (content.includes("'")) return "text-[#2ECC71]";
+  if (content.includes("ZarpSDK") || content.includes("shield") || content.includes("unshield"))
+    return "text-[#00B4D8]";
+  return "text-white";
+}
+
 export default function HomePage() {
+  const previewPairs = TOKEN_PAIRS.slice(0, 5);
+
   return (
-    <div className="space-y-20 pb-12">
-      {/* Hero */}
-      <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-        <div className="space-y-6">
-          <span className="section-chip">Confidential token UI</span>
-          <div className="space-y-4">
-            <h1 className="max-w-3xl text-display-xl tracking-tight">
-              ZARP Protocol
-            </h1>
-            <p className="max-w-2xl text-lg leading-relaxed text-[#4D535A]">
-              A new Kimi-style frontend layered over the existing FHEVM backend
-              for registry browsing, token wrapping, balance decryption, and faucet access.
-            </p>
+    <>
+      {/* ───── Hero ───── */}
+      <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
+        <ShieldSphere />
+        <div className="relative z-10 text-center max-w-[800px] px-6">
+          <div className="animate-[fadeInUp_600ms_ease_200ms_both]">
+            <h1 className="text-display-xl text-black">ZARP</h1>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/wrap" className="btn-yellow animate-pulse-glow">
-              Start wrapping
-              <ArrowRight className="ml-2 h-4 w-4" />
+          <div className="animate-[fadeInUp_600ms_ease_350ms_both]">
+            <h1 className="text-display-xl text-black -mt-4">Protocol</h1>
+          </div>
+          <p className="text-lg text-[#656B73] mt-4 max-w-[520px] mx-auto leading-relaxed animate-[fadeInUp_500ms_ease_500ms_both]">
+            Confidential token wrapping. Shield your ERC-20 assets with ERC-7984 privacy.
+          </p>
+          <div className="flex items-center justify-center gap-4 mt-8 animate-[fadeInUp_400ms_ease_650ms_both]">
+            <Link href="/wrap" className="btn-yellow inline-flex items-center">
+              Get Started
             </Link>
-            <Link href="/registry" className="btn-secondary">
-              View registry
+            <Link href="/registry" className="btn-secondary inline-flex items-center">
+              View Registry
             </Link>
           </div>
         </div>
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-[fadeIn_400ms_ease_1200ms_both]">
+          <ChevronDown className="w-5 h-5 text-[#A7ACB3] animate-bounce-scroll" />
+        </div>
+      </section>
 
-        <div className="section-card p-6">
-          <div className="flex items-center justify-between border-b border-black/5 pb-4">
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-[#A7ACB3]">Network</p>
-              <p className="mt-1 text-xl font-semibold">Sepolia</p>
-            </div>
-            <span className="rounded-full bg-[#FFD100] px-3 py-1 text-xs font-semibold text-black">
-              Live backend
-            </span>
-          </div>
-          <div className="mt-5 grid grid-cols-2 gap-3">
-            <div className="rounded-xl bg-[#F3F4F5] p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-[#A7ACB3]">Pairs</p>
-              <p className="mt-2 text-3xl font-semibold">{WRAPPER_PAIRS.length}</p>
-            </div>
-            <div className="rounded-xl bg-[#F3F4F5] p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-[#A7ACB3]">Modes</p>
-              <p className="mt-2 text-3xl font-semibold">3</p>
-            </div>
-          </div>
-          <div className="mt-4 rounded-xl border border-black/5 bg-black p-5 text-white">
-            <div className="flex items-center gap-2 text-[#FFD100]">
-              <Sparkles className="h-4 w-4" />
-              <span className="text-xs font-semibold uppercase tracking-[0.2em]">
-                Backend preserved
-              </span>
-            </div>
-            <p className="mt-3 text-sm leading-relaxed text-white/75">
-              The wallet, relayer, registry, wrap, decrypt, and faucet logic
-              still comes from the current Next app backend.
-            </p>
+      {/* ───── Features ───── */}
+      <section className="py-20 px-6">
+        <div className="max-w-[1200px] mx-auto">
+          <SectionTitle
+            eyebrow="PROTOCOL FEATURES"
+            title="Why ZARP?"
+            description="The simplest way to add confidentiality to your existing ERC-20 tokens."
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
+            {features.map((feature, i) => (
+              <ScrollReveal key={feature.title} delay={i * 150}>
+                <div className="card-default h-full flex flex-col">
+                  <div className="w-12 h-12 flex items-center justify-center">
+                    <feature.icon className={`w-7 h-7 ${feature.iconColor}`} strokeWidth={2} />
+                  </div>
+                  <h3 className="text-xl font-semibold text-[#1A1D20] mt-4">{feature.title}</h3>
+                  <p className="text-base text-[#656B73] mt-2 leading-relaxed flex-1">{feature.description}</p>
+                  <Link
+                    href={feature.link.href}
+                    className="text-sm font-medium text-[#FFD100] mt-4 inline-flex items-center gap-1 hover:underline underline-offset-4"
+                  >
+                    {feature.link.text} →
+                  </Link>
+                </div>
+              </ScrollReveal>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Scroll hint */}
-      <div className="flex justify-center -mt-14">
-        <div className="animate-bounce-scroll text-[#CDD0D4]">
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-      </div>
-
-      {/* Features */}
-      <ScrollReveal>
-        <section className="grid gap-4 md:grid-cols-3">
-          {features.map((feature, i) => {
-            const Icon = feature.icon;
-            return (
-              <ScrollReveal key={feature.title} delay={i * 80}>
-                <div className="card-default h-full">
-                  <Icon className="h-6 w-6 text-[#FFD100]" />
-                  <h2 className="mt-4 text-xl font-semibold">{feature.title}</h2>
-                  <p className="mt-2 text-sm leading-relaxed text-[#656B73]">
-                    {feature.description}
-                  </p>
-                  <Link
-                    href={feature.href}
-                    className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-black transition-colors hover:text-[#5D5FEF]"
-                  >
-                    Open
-                    <ExternalLink className="h-4 w-4" />
-                  </Link>
-                </div>
-              </ScrollReveal>
-            );
-          })}
-        </section>
-      </ScrollReveal>
-
-      {/* Registry Preview */}
-      <ScrollReveal>
-        <section className="section-card p-6 sm:p-8">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <span className="section-chip">Registry preview</span>
-              <h2 className="mt-4 text-display-m">Supported pairs</h2>
+      {/* ───── Token Pairs Preview ───── */}
+      <section className="py-20 px-6 bg-white border-y border-[#E5E7E9]">
+        <div className="max-w-[1200px] mx-auto">
+          <SectionTitle
+            eyebrow="SUPPORTED TOKENS"
+            title="Wrapper Registry"
+            description="Browse all registered ERC-20 to ERC-7984 confidential wrapper pairs across supported networks."
+          />
+          <ScrollReveal>
+            <div className="flex gap-8 mt-8 mb-8">
+              <div>
+                <span className="text-xs text-[#A7ACB3] uppercase tracking-wider">Total Pairs</span>
+                <p className="text-display-s text-[#1A1D20]">8</p>
+              </div>
+              <div>
+                <span className="text-xs text-[#A7ACB3] uppercase tracking-wider">Valid Wrappers</span>
+                <p className="text-display-s text-[#1A1D20]">8</p>
+              </div>
+              <div>
+                <span className="text-xs text-[#A7ACB3] uppercase tracking-wider">Network</span>
+                <p className="text-2xl font-semibold text-[#00B4D8] mt-1">Sepolia</p>
+              </div>
             </div>
-            <Link
-              href="/registry"
-              className="inline-flex items-center gap-1 text-sm font-semibold text-black"
-            >
-              Open full registry
-              <ArrowRight className="h-4 w-4" />
+          </ScrollReveal>
+          <ScrollReveal>
+            <div className="card-default p-0 overflow-x-auto">
+              <table className="w-full min-w-[700px]">
+                <thead>
+                  <tr className="bg-[#F3F4F5]">
+                    <th className="text-left px-4 py-3 text-xs font-medium text-[#A7ACB3] uppercase tracking-wider rounded-tl-xl">ERC-20 Token</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-[#A7ACB3] uppercase tracking-wider">ERC-20 Address</th>
+                    <th className="text-center px-4 py-3 text-xs font-medium text-[#A7ACB3] uppercase tracking-wider">→</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-[#A7ACB3] uppercase tracking-wider">ERC-7984 Token</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-[#A7ACB3] uppercase tracking-wider">ERC-7984 Address</th>
+                    <th className="text-left px-4 py-3 text-xs font-medium text-[#A7ACB3] uppercase tracking-wider rounded-tr-xl">Network</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {previewPairs.map((pair) => (
+                    <tr key={pair.id} className="border-b border-[#F3F4F5] hover:bg-[rgba(255,209,0,0.04)] transition-colors">
+                      <td className="px-4 py-3.5">
+                        <span className="inline-flex items-center gap-2 bg-[#F3F4F5] text-[#4D535A] text-xs font-medium px-3 py-1 rounded-full">
+                          <span className="w-5 h-5 rounded-full bg-gradient-to-br from-[#FFD100] to-[#FFD100]/60 flex items-center justify-center text-[8px] font-bold text-black">
+                            {pair.erc20Symbol[0]}
+                          </span>
+                          {pair.erc20Symbol}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3.5 font-mono text-xs text-[#656B73]">{pair.erc20Address}</td>
+                      <td className="px-4 py-3.5 text-center text-[#A7ACB3] text-sm">→</td>
+                      <td className="px-4 py-3.5">
+                        <span className="inline-flex items-center gap-2 bg-[rgba(93,95,239,0.15)] text-[#5D5FEF] text-xs font-medium px-3 py-1 rounded-full">
+                          {pair.erc7984Symbol}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3.5 font-mono text-xs text-[#656B73]">{pair.erc7984Address}</td>
+                      <td className="px-4 py-3.5">
+                        <span className="inline-flex items-center bg-[#00B4D8] text-white text-xs font-medium px-3 py-1 rounded-full">
+                          {pair.chain}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </ScrollReveal>
+          <div className="text-center mt-6">
+            <Link href="/registry" className="text-sm font-medium text-[#FFD100] hover:underline underline-offset-4">
+              View All Pairs →
             </Link>
           </div>
-          <div className="mt-8">
-            <PairTable />
-          </div>
-        </section>
-      </ScrollReveal>
+        </div>
+      </section>
 
-      {/* How it works + Dev flow */}
-      <section className="grid gap-6 lg:grid-cols-2">
-        <ScrollReveal direction="left">
-          <div className="section-card p-6 sm:p-8 h-full">
-            <span className="section-chip">How it works</span>
-            <div className="mt-6 space-y-5">
-              {steps.map((step, i) => (
-                <ScrollReveal key={step.number} delay={i * 100}>
+      {/* ───── How It Works ───── */}
+      <section className="py-20 px-6">
+        <div className="max-w-[1000px] mx-auto">
+          <div className="text-center">
+            <SectionTitle
+              eyebrow="HOW IT WORKS"
+              title="Three Steps to Privacy"
+              description="Shield your tokens in seconds. The ZARP Protocol handles the complexity — you enjoy the privacy."
+              centered
+            />
+          </div>
+          <div className="relative mt-16">
+            <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-[#E5E7E9] -translate-x-1/2" />
+            <div className="md:hidden absolute left-4 top-0 bottom-0 w-0.5 bg-[#E5E7E9]" />
+            {steps.map((step, i) => (
+              <ScrollReveal
+                key={step.number}
+                direction={step.side === "left" ? "left" : "right"}
+                delay={i * 150}
+              >
+                <div
+                  className={`relative flex items-start mb-16 last:mb-0 ${
+                    step.side === "left"
+                      ? "md:flex-row md:text-right"
+                      : "md:flex-row-reverse md:text-left"
+                  } flex-row text-left`}
+                >
+                  <div
+                    className={`pl-12 md:pl-0 md:w-[calc(50%-32px)] ${
+                      step.side === "left" ? "md:pr-12" : "md:pl-12"
+                    }`}
+                  >
+                    <span className="text-display-s text-[#FFD100]/40 font-semibold leading-none">
+                      {step.number}
+                    </span>
+                    <h3 className="text-xl font-semibold text-[#1A1D20] mt-2">{step.title}</h3>
+                    <p className="text-base text-[#656B73] mt-2 leading-relaxed">{step.description}</p>
+                  </div>
+                  <div className="absolute left-4 md:left-1/2 top-2 md:-translate-x-1/2 z-10">
+                    <div
+                      className={`w-4 h-4 rounded-full bg-[#FFD100] border-[3px] border-black ${
+                        i === 2 ? "animate-pulse-glow" : ""
+                      }`}
+                    />
+                  </div>
+                  <div className="hidden md:block md:w-[calc(50%-32px)]" />
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ───── Technical Overview ───── */}
+      <section className="py-20 px-6 bg-white border-t border-[#E5E7E9]">
+        <div className="max-w-[1200px] mx-auto">
+          <SectionTitle
+            eyebrow="TECHNICAL DETAILS"
+            title="Built for Developers"
+            description="Integrate confidential token wrapping into your dApp with our simple SDK."
+          />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12">
+            {/* Code Block */}
+            <ScrollReveal>
+              <div className="bg-black rounded-xl overflow-hidden relative group">
+                <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
+                  <span className="w-3 h-3 rounded-full bg-[#E74C3C]" />
+                  <span className="w-3 h-3 rounded-full bg-[#FFD100]" />
+                  <span className="w-3 h-3 rounded-full bg-[#2ECC71]" />
+                  <span className="flex-1 text-center font-mono text-xs text-[#656B73]">zarp-sdk.example</span>
+                </div>
+                <div className="p-4 overflow-x-auto">
+                  {codeLines.map((line) => (
+                    <div key={line.num} className="flex">
+                      <span className="w-8 text-right text-[#656B73] font-mono text-xs select-none mr-4 flex-shrink-0">
+                        {line.num}
+                      </span>
+                      <span className={`font-mono text-xs ${getLineColor(line.type, line.content)}`}>
+                        {line.content || " "}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </ScrollReveal>
+
+            {/* Feature List */}
+            <div className="flex flex-col gap-6">
+              {techFeatures.map((feature, i) => (
+                <ScrollReveal key={feature.title} direction="right" delay={i * 150}>
                   <div className="flex gap-4">
-                    <div className="text-display-s text-[#FFD100]">{step.number}</div>
+                    <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                      <feature.icon className={`w-5 h-5 ${feature.iconColor}`} strokeWidth={2} />
+                    </div>
                     <div>
-                      <h3 className="text-lg font-semibold">{step.title}</h3>
-                      <p className="mt-1 text-sm leading-relaxed text-[#656B73]">
-                        {step.description}
-                      </p>
+                      <h4 className="text-lg font-semibold text-[#1A1D20]">{feature.title}</h4>
+                      <p className="text-base text-[#656B73] mt-1 leading-relaxed">{feature.description}</p>
                     </div>
                   </div>
                 </ScrollReveal>
               ))}
             </div>
           </div>
-        </ScrollReveal>
-
-        <ScrollReveal direction="right">
-          <div className="section-card overflow-hidden p-0 h-full">
-            <div className="border-b border-black/5 px-6 py-4">
-              <span className="text-xs uppercase tracking-[0.2em] text-[#A7ACB3]">
-                Developer flow
-              </span>
-            </div>
-            <div className="bg-black px-6 py-5 text-white h-full">
-              <pre className="overflow-x-auto text-sm leading-7 text-white/80">
-{`const token = sdk.createToken(erc20, wrapper);
-
-await token.shield(100n, {
-  approvalStrategy: "exact",
-});
-
-const balance = await token.balanceOf();`}
-              </pre>
-            </div>
-          </div>
-        </ScrollReveal>
+        </div>
       </section>
-    </div>
+    </>
   );
 }

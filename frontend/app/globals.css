@@ -1,11 +1,9 @@
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/*
- * @file app/globals.css
- * @description Global theme tokens and utility classes for the new Kimi-style UI.
- */
 
 @layer base {
   :root {
@@ -20,7 +18,7 @@
     --secondary: 220 7% 95%;
     --secondary-foreground: 0 0% 20%;
     --muted: 220 7% 95%;
-    --muted-foreground: 220 4% 46%;
+    --muted-foreground: 220 4% 58%;
     --accent: 48 100% 50%;
     --accent-foreground: 0 0% 0%;
     --destructive: 4 74% 56%;
@@ -28,37 +26,34 @@
     --border: 220 7% 90%;
     --input: 220 7% 90%;
     --ring: 48 100% 50%;
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
     --color-black: #000000;
-    --color-white: #ffffff;
-    --color-near-white: #f8f9fa;
-    --color-yellow: #ffd100;
-    --color-purple: #5d5fef;
-    --color-cyan: #00b4d8;
-    --color-green: #2ecc71;
-    --color-red: #e74c3c;
-    --color-grey-100: #f3f4f5;
-    --color-grey-200: #e5e7e9;
-    --color-grey-300: #cdd0d4;
-    --color-grey-400: #a7acb3;
-    --color-grey-500: #878d95;
-    --color-grey-600: #656b73;
-    --color-grey-700: #4d535a;
-    --color-grey-800: #33383d;
-    --color-grey-900: #1a1d20;
+    --color-white: #FFFFFF;
+    --color-near-white: #F8F9FA;
+    --color-yellow: #FFD100;
+    --color-purple: #5D5FEF;
+    --color-cyan: #00B4D8;
+    --color-green: #2ECC71;
+    --color-red: #E74C3C;
+    --color-orange: #F39C12;
+    --color-grey-100: #F3F4F5;
+    --color-grey-200: #E5E7E9;
+    --color-grey-300: #CDD0D4;
+    --color-grey-400: #A7ACB3;
+    --color-grey-500: #878D95;
+    --color-grey-600: #656B73;
+    --color-grey-700: #4D535A;
+    --color-grey-800: #33383D;
+    --color-grey-900: #1A1D20;
   }
 
   * {
     border-color: hsl(var(--border));
   }
 
-  html {
-    scroll-behavior: smooth;
-  }
-
   body {
-    background: var(--color-near-white);
+    background-color: var(--color-near-white);
     color: var(--color-grey-900);
     font-family: "Geist Variable", system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -66,8 +61,7 @@
     overflow-x: hidden;
   }
 
-  code,
-  .font-mono {
+  code, .font-mono {
     font-family: "Geist Mono Variable", ui-monospace, "Cascadia Code", monospace;
   }
 }
@@ -76,7 +70,7 @@
   .text-display-xl {
     font-size: clamp(64px, 10vw, 128px);
     font-weight: 600;
-    line-height: 1;
+    line-height: 100%;
     letter-spacing: -0.05em;
     text-rendering: geometricPrecision;
   }
@@ -84,7 +78,7 @@
   .text-display-l {
     font-size: clamp(48px, 8vw, 96px);
     font-weight: 600;
-    line-height: 1;
+    line-height: 100%;
     letter-spacing: -0.04em;
     text-rendering: geometricPrecision;
   }
@@ -92,7 +86,7 @@
   .text-display-m {
     font-size: clamp(40px, 6vw, 64px);
     font-weight: 600;
-    line-height: 1.05;
+    line-height: 105%;
     letter-spacing: -0.03em;
     text-rendering: geometricPrecision;
   }
@@ -100,7 +94,7 @@
   .text-display-s {
     font-size: clamp(36px, 4vw, 48px);
     font-weight: 600;
-    line-height: 1.1;
+    line-height: 110%;
     letter-spacing: -0.02em;
     text-rendering: geometricPrecision;
   }
@@ -116,51 +110,38 @@
     background-size: 256px 256px;
   }
 
-  .section-shell {
-    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
-  }
-
-  .section-card {
-    @apply rounded-2xl border border-[#E5E7E9] bg-white shadow-[0_1px_4px_rgba(0,0,0,0.04)];
-  }
-
-  .section-chip {
-    @apply inline-flex items-center rounded-full border border-black/10 bg-black px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#FFD100];
-  }
-
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-lg bg-black px-5 py-3 text-xs font-semibold text-white transition-all duration-300;
+    @apply bg-black text-white rounded-lg px-5 py-2.5 text-xs font-medium transition-all duration-300;
   }
-
   .btn-primary:hover {
     @apply bg-[#FFD100] text-black;
   }
-
-  .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-lg border border-black px-5 py-3 text-xs font-semibold text-black transition-all duration-300;
+  .btn-primary:active {
+    transform: scale(0.98);
   }
 
+  .btn-secondary {
+    @apply bg-transparent border-[1.5px] border-black text-black rounded-lg px-5 py-2.5 text-xs font-medium transition-all duration-300;
+  }
   .btn-secondary:hover {
     @apply bg-black text-white;
   }
 
   .btn-yellow {
-    @apply inline-flex items-center justify-center rounded-lg bg-[#FFD100] px-6 py-3 text-xs font-semibold text-black transition-all duration-300;
+    @apply bg-[#FFD100] text-black rounded-lg px-6 py-3 text-xs font-semibold transition-all duration-300;
     box-shadow: 0 0 20px rgba(255, 209, 0, 0.3);
   }
-
   .btn-yellow:hover {
     @apply bg-black text-[#FFD100];
   }
 
   .card-default {
-    @apply rounded-xl border border-[#E5E7E9] bg-white p-6 transition-all duration-300;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    @apply bg-white border border-[#E5E7E9] rounded-xl p-6 transition-all duration-300;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
   }
-
   .card-default:hover {
     @apply border-[#CDD0D4];
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
     transform: translateY(-2px);
   }
 }
@@ -170,51 +151,68 @@
     opacity: 0;
     transform: translateY(30px);
   }
-
   .reveal-visible {
     opacity: 1;
     transform: translateY(0);
-    transition: opacity 500ms cubic-bezier(0.16, 1, 0.3, 1),
-      transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 500ms cubic-bezier(0.16, 1, 0.3, 1), transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .reveal-left {
     opacity: 0;
     transform: translateX(-30px);
   }
-
   .reveal-right {
     opacity: 0;
     transform: translateX(30px);
   }
+
+  .stagger-1 { transition-delay: 0ms; }
+  .stagger-2 { transition-delay: 100ms; }
+  .stagger-3 { transition-delay: 200ms; }
+  .stagger-4 { transition-delay: 300ms; }
+  .stagger-5 { transition-delay: 400ms; }
+  .stagger-6 { transition-delay: 500ms; }
+  .stagger-7 { transition-delay: 600ms; }
+  .stagger-8 { transition-delay: 700ms; }
 }
 
 @keyframes bounce-scroll {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(8px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
 }
 
 @keyframes pulse-glow {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 209, 0, 0.4);
-  }
-  100% {
-    box-shadow: 0 0 0 12px rgba(255, 209, 0, 0);
-  }
+  0% { box-shadow: 0 0 0 0 rgba(255, 209, 0, 0.4); }
+  100% { box-shadow: 0 0 0 12px rgba(255, 209, 0, 0); }
 }
 
 @keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes spin-loader {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes toast-in {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes toast-out {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .animate-bounce-scroll {
@@ -226,7 +224,11 @@
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, #f3f4f5 25%, #e5e7e9 50%, #f3f4f5 75%);
+  background: linear-gradient(90deg, #F3F4F5 25%, #E5E7E9 50%, #F3F4F5 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s linear infinite;
+}
+
+.animate-spin-loader {
+  animation: spin-loader 1s linear infinite;
 }

@@ -1,67 +1,118 @@
-/**
- * @file components/Footer.tsx
- * @description Simple Kimi-style footer for the Next app shell.
- */
+"use client";
 
 import Link from "next/link";
 import { Shield } from "lucide-react";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
-const protocolLinks = [
-  { label: "Home", href: "/" },
+const PROTOCOL_LINKS = [
   { label: "Registry", href: "/registry" },
   { label: "Wrap", href: "/wrap" },
   { label: "Decrypt", href: "/decrypt" },
+  { label: "Faucet", href: "/faucet" },
+];
+
+const RESOURCE_LINKS = [
+  { label: "Documentation", href: "#" },
+  { label: "GitHub", href: "#" },
+  { label: "ERC-7984 Standard", href: "#" },
+];
+
+const COMMUNITY_LINKS = [
+  { label: "Twitter/X", href: "#" },
+  { label: "Discord", href: "#" },
 ];
 
 export function Footer() {
+  const { ref, isVisible } = useScrollReveal(0.05);
+
   return (
-    <footer className="border-t border-black/5 bg-black text-white">
-      <div className="section-shell py-14">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
-          <div>
+    <footer ref={ref} className="bg-black text-white">
+      <div
+        className={`max-w-[1200px] mx-auto px-6 pt-16 pb-8 transition-all duration-700 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+        }`}
+      >
+        {/* Row 1 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+          {/* Brand */}
+          <div className="lg:col-span-1">
             <div className="flex items-center gap-2">
-              <Shield className="h-8 w-8 text-[#FFD100]" />
+              <Shield className="w-8 h-8 text-[#FFD100]" />
               <span className="text-2xl font-semibold tracking-tight">ZARP</span>
             </div>
-            <p className="mt-3 text-sm text-white/65">
-              Confidential token wrapping with the previous backend kept intact.
+            <p className="text-sm text-[#A7ACB3] mt-3">
+              Confidential Token Wrapping Protocol
             </p>
           </div>
 
+          {/* Protocol */}
           <div>
-            <h4 className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-white/45">
+            <h4 className="text-xs font-medium text-[#A7ACB3] uppercase tracking-wider mb-4">
               Protocol
             </h4>
             <div className="flex flex-col gap-2">
-              {protocolLinks.map((link) => (
-                <Link key={link.href} href={link.href} className="text-sm text-white/65 transition-colors hover:text-[#FFD100]">
+              {PROTOCOL_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm text-[#A7ACB3] hover:text-[#FFD100] transition-colors duration-300"
+                >
                   {link.label}
                 </Link>
               ))}
             </div>
           </div>
 
+          {/* Resources */}
           <div>
-            <h4 className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-white/45">
-              Backend
+            <h4 className="text-xs font-medium text-[#A7ACB3] uppercase tracking-wider mb-4">
+              Resources
             </h4>
-            <p className="text-sm text-white/65">
-              This frontend still uses the existing Zama FHEVM hooks, wallet
-              connection, and registry/wrap/decrypt flows.
-            </p>
+            <div className="flex flex-col gap-2">
+              {RESOURCE_LINKS.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="text-sm text-[#A7ACB3] hover:text-[#FFD100] transition-colors duration-300"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
           </div>
 
+          {/* Community */}
           <div>
-            <h4 className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-white/45">
-              Network
+            <h4 className="text-xs font-medium text-[#A7ACB3] uppercase tracking-wider mb-4">
+              Community
             </h4>
-            <p className="text-sm text-white/65">Sepolia testnet</p>
+            <div className="flex flex-col gap-2">
+              {COMMUNITY_LINKS.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="text-sm text-[#A7ACB3] hover:text-[#FFD100] transition-colors duration-300"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col gap-4 border-t border-white/10 pt-6 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
-          <p>2026 ZARP Protocol</p>
-          <p>Built on the existing confidential token backend.</p>
+        {/* Row 2 */}
+        <div className="border-t border-white/10 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-xs text-[#A7ACB3]">
+            2025 ZARP Protocol. All rights reserved.
+          </p>
+          <div className="flex gap-6">
+            <a href="#" className="text-xs text-[#A7ACB3] hover:text-white transition-colors">
+              Terms of Service
+            </a>
+            <a href="#" className="text-xs text-[#A7ACB3] hover:text-white transition-colors">
+              Privacy Policy
+            </a>
+          </div>
         </div>
       </div>
     </footer>
