@@ -51,7 +51,7 @@ interface UseWrapReturn {
   /** Update the amount input. */
   setAmount: (amount: string) => void;
   /** Select a token pair. */
-  selectPair: (pair: TokenPair) => void;
+  selectPair: (pair: TokenPair | null) => void;
   /** Reset state to idle. */
   reset: () => void;
   /** Underlying ERC-20 token balance. */
@@ -249,7 +249,7 @@ export function useWrap(): UseWrapReturn {
     setState((prev) => ({ ...prev, amount }));
   }, []);
 
-  const selectPair = useCallback((pair: TokenPair) => {
+  const selectPair = useCallback((pair: TokenPair | null) => {
     setState((prev) => ({ ...prev, selectedPair: pair, phase: "idle", error: undefined }));
   }, []);
 

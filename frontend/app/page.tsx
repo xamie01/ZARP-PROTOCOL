@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronDown, Shield, Lock, ExternalLink, Check, Copy } from "lucide-react";
+import { ChevronDown, Shield, Lock, ExternalLink, Check } from "lucide-react";
 import dynamic from "next/dynamic";
 import SectionTitle from "@/components/SectionTitle";
 import ScrollReveal from "@/components/ScrollReveal";

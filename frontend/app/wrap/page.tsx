@@ -58,7 +58,7 @@ export default function WrapPage() {
   const handleTabChange = (tab: "shield" | "unshield") => {
     setActiveTab(tab);
     setMode(tab);
-    selectPair(null as any);
+    selectPair(null);
   };
 
   const handleTokenSelect = (i: number) => {
@@ -66,10 +66,9 @@ export default function WrapPage() {
     selectPair({
       tokenAddress: token.tokenAddress as `0x${string}`,
       confidentialTokenAddress: token.confidentialTokenAddress as `0x${string}`,
-      symbol: token.symbol,
+      isValid: true,
       decimals: token.decimals,
-      chainId: token.chainId,
-    } as any);
+    });
     setTokenDropdownOpen(false);
   };
 
