@@ -1,36 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Wallet, Shield, Lock, ArrowUpDown, ChevronDown } from "lucide-react";
 import { useAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useWrap } from "@/hooks/useWrap";
-import { WRAPPER_PAIRS } from "@/lib/registry-data";
-
-const ERC20_TOKENS = WRAPPER_PAIRS.map((p) => ({
-  symbol: p.erc20.symbol,
-  address: p.erc20.address,
-  decimals: p.erc20.decimals,
-  tokenAddress: p.erc20.address,
-  confidentialTokenAddress: p.erc7984.address,
-  chainId: p.chainId,
-}));
-
-const CONFIDENTIAL_TOKENS = WRAPPER_PAIRS.map((p) => ({
-  symbol: p.erc7984.symbol,
-  address: p.erc7984.address,
-  decimals: p.erc7984.decimals,
-  tokenAddress: p.erc20.address,
-  confidentialTokenAddress: p.erc7984.address,
-  chainId: p.chainId,
-}));
+import { useChainPairs } from "@/hooks/useChainPairs";
 
 export default function WrapPage() {
   const [activeTab, setActiveTab] = useState<"shield" | "unshield">("shield");
   const [tokenDropdownOpen, setTokenDropdownOpen] = useState(false);
   const { address, isConnected } = useAccount();
   const { openConnectModal } = useConnectModal();
+  const { pairs } = useChainPairs();
   const {
     state,
     shield,
@@ -43,8 +26,34 @@ export default function WrapPage() {
     isLoading,
   } = useWrap();
 
-  const currentTokens = activeTab === "shield" ? ERC20_TOKENS : CONFIDENTIAL_TOKENS;
-  const outputTokens = activeTab === "shield" ? CONFIDENTIAL_TOKENS : ERC20_TOKENS;
+  /* Token lists derived from the connected chain's registry pairs. */
+  const erc20Tokens = useMemo(
+    () =>
+      pairs.map((p) => ({
+        symbol: p.erc20.symbol,
+        address: p.erc20.address,
+        decimals: p.erc20.decimals,
+        tokenAddress: p.erc20.address,
+        confidentialTokenAddress: p.erc7984.address,
+        chainId: p.chainId,
+      })),
+    [pairs]
+  );
+  const confidentialTokens = useMemo(
+    () =>
+      pairs.map((p) => ({
+        symbol: p.erc7984.symbol,
+        address: p.erc7984.address,
+        decimals: p.erc7984.decimals,
+        tokenAddress: p.erc20.address,
+        confidentialTokenAddress: p.erc7984.address,
+        chainId: p.chainId,
+      })),
+    [pairs]
+  );
+
+  const currentTokens = activeTab === "shield" ? erc20Tokens : confidentialTokens;
+  const outputTokens = activeTab === "shield" ? confidentialTokens : erc20Tokens;
   const selectedIdx = state.selectedPair
     ? currentTokens.findIndex(
         (t) =>

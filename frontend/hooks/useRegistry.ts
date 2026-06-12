@@ -9,8 +9,7 @@
 
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { WRAPPER_PAIRS, KNOWN_TOKEN_PAIRS } from "@/lib/registry-data";
-import type { Address } from "viem";
+import { ALL_STATIC_PAIRS } from "@/lib/registry-data";
 
 import { useListPairs } from "@zama-fhe/react-sdk";
 
@@ -90,7 +89,7 @@ export function useRegistry(): UseRegistryReturn {
    */
   const { data: staticPairs, isLoading: staticLoading } = useQuery({
     queryKey: ["registry", "static-pairs"],
-    queryFn: () => WRAPPER_PAIRS,
+    queryFn: () => ALL_STATIC_PAIRS,
     staleTime: STALE_TIME,
   });
 
@@ -119,7 +118,7 @@ export function useRegistry(): UseRegistryReturn {
     }
 
     /* Fallback to static data. */
-    return (staticPairs ?? WRAPPER_PAIRS).map((p) => ({
+    return (staticPairs ?? ALL_STATIC_PAIRS).map((p) => ({
       erc20: { address: p.erc20.address, symbol: p.erc20.symbol, decimals: p.erc20.decimals },
       erc7984: { address: p.erc7984.address, symbol: p.erc7984.symbol, decimals: p.erc7984.decimals },
       chainId: p.chainId,

@@ -5,6 +5,7 @@ import { Search, Copy, ExternalLink, Shield, Check } from "lucide-react";
 import CountUp from "react-countup";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useRegistry } from "@/hooks/useRegistry";
+import { explorerUrl } from "@/lib/registry-data";
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -88,7 +89,7 @@ export default function RegistryPage() {
                 </div>
                 <div>
                   <span className="text-xs text-[#A7ACB3] uppercase tracking-wider">Network</span>
-                  <p className="text-2xl font-semibold text-[#00B4D8]">Sepolia</p>
+                  <p className="text-2xl font-semibold text-[#00B4D8]">{chainLabel}</p>
                 </div>
               </div>
             </ScrollReveal>
@@ -231,7 +232,7 @@ export default function RegistryPage() {
                             <Copy className="w-4 h-4" />
                           </button>
                           <a
-                            href={`https://sepolia.etherscan.io/address/${pair.erc20.address}`}
+                            href={explorerUrl(pair.chainId, "address", pair.erc20.address)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-[#A7ACB3] hover:text-[#FFD100] transition-colors"

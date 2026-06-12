@@ -9,27 +9,34 @@
  * a Web Worker and IndexedDB at construction, both of which crash during SSR.
  */
 
-import { SepoliaConfig, isZeroHandle as sdkIsZeroHandle } from "@zama-fhe/sdk";
-import { SEPOLIA_RPC_URL } from "@/lib/registry-data";
+import { SepoliaConfig, MainnetConfig, isZeroHandle as sdkIsZeroHandle } from "@zama-fhe/sdk";
+import { MAINNET_CHAIN_ID } from "@/lib/registry-data";
 
-/*************** SDK Configuration ***************/
+/*************** Relayer URL Resolution ***************/
 
 /**
- * Sepolia transport configuration for RelayerWeb.
+ * Resolve the relayer URL for a chain.
  *
- * In production, replace relayerUrl with a backend proxy URL
- * and never expose the API key on the client.
- * See: references/zama-sdk-auth-storage.md (Backend proxy pattern)
+ * Sepolia's relayer is open (no API key), so the SDK's bundled Sepolia relayer
+ * URL is used directly. Mainnet's relayer requires an API key, which MUST stay
+ * server-side: when NEXT_PUBLIC_RELAYER_PROXY_URL is set, mainnet routes through
+ * that backend proxy (see app/api/relayer/[chain]/route.ts). The browser never
+ * sees the key.
+ *
+ * @param chainId - Target chain id.
+ * @returns The relayer URL to use for that chain.
  */
-export const sepoliaTransportConfig = {
-  [SepoliaConfig.chainId]: {
-    ...SepoliaConfig,
-    network: SEPOLIA_RPC_URL,
-    /* TODO: Replace with your backend proxy URL for production.
-     * For Sepolia testnet, the relayer is open (no API key needed).
-     * For mainnet, use: relayerUrl: "/api/relayer/1" */
-  },
-} as const;
+export function relayerUrlFor(chainId: number): string {
+  if (chainId === MAINNET_CHAIN_ID) {
+    /* Mainnet: prefer the backend proxy; fall back to the bundled URL (which
+     * will 401 without a key, surfaced as a clear relayer error). */
+    const proxy = process.env.NEXT_PUBLIC_RELAYER_PROXY_URL;
+    if (proxy) return `${proxy.replace(/\/$/, "")}/${MAINNET_CHAIN_ID}`;
+    return MainnetConfig.relayerUrl;
+  }
+  /* Sepolia: open relayer; allow an explicit override for self-hosted setups. */
+  return process.env.NEXT_PUBLIC_ZAMA_RELAYER_URL || SepoliaConfig.relayerUrl;
+}
 
 /**
  * Default keypair TTL in seconds (30 days).

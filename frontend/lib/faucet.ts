@@ -10,10 +10,12 @@ import { FAUCET_CONTRACT_ADDRESS, FAUCET_AMOUNT } from "@/lib/registry-data";
 /*************** Faucet Contract ABI ***************/
 
 /**
- * Minimal ABI for the cTokenMock faucet contract.
+ * Minimal ABI for the official Sepolia cTokenMock ERC-20s.
  *
- * TODO: Replace with the actual deployed faucet contract ABI.
- * The mint function should accept a recipient address and amount.
+ * Verified on-chain: every official mock (USDCMock, USDTMock, WETHMock,
+ * BRONMock, ZAMAMock, tGBPMock, XAUtMock) exposes an open, permissionless
+ * `mint(address,uint256)` (selector 0x40c10f19, ~52k gas), so any connected
+ * wallet can self-mint test tokens. No owner/role gating.
  */
 export const FAUCET_ABI = [
   {
@@ -59,9 +61,9 @@ export const FAUCET_ABI = [
 /*************** Faucet Helpers ***************/
 
 /**
- * Get the faucet contract address.
- *
- * TODO: Replace with actual deployed address once available.
+ * Get the default faucet token address (USDCMock on Sepolia).
+ * The faucet UI mints per-token, calling mint() directly on each mock's own
+ * address; this is only the default fallback target.
  */
 export function getFaucetAddress(): Address {
   return FAUCET_CONTRACT_ADDRESS;

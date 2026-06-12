@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { Wallet, AlertTriangle, Clock, Copy } from "lucide-react";
-import { useAccount } from "wagmi";
+import { useAccount, useSwitchChain } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useFaucet } from "@/hooks/useFaucet";
-import { WRAPPER_PAIRS } from "@/lib/registry-data";
+import { WRAPPER_PAIRS, SEPOLIA_CHAIN_ID } from "@/lib/registry-data";
 import type { Address } from "viem";
 
 const ERC20_TOKENS = WRAPPER_PAIRS.map((p) => ({
@@ -76,8 +76,11 @@ function TokenFaucetButton({
 export default function FaucetPage() {
   const [selectedToken, setSelectedToken] = useState<number | null>(null);
   const [requestHistory, setRequestHistory] = useState<RequestRecord[]>([]);
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chainId } = useAccount();
   const { openConnectModal } = useConnectModal();
+  const { switchChain } = useSwitchChain();
+
+  const wrongNetwork = isConnected && chainId !== SEPOLIA_CHAIN_ID;
 
   const handleRequest = (record: RequestRecord) => {
     setRequestHistory((prev) => [record, ...prev].slice(0, 5));
@@ -119,6 +122,22 @@ export default function FaucetPage() {
                 These are testnet tokens with no real value. For development and testing only.
               </p>
             </div>
+
+            {/* Wrong-network guard */}
+            {wrongNetwork && (
+              <div className="px-6 py-3 bg-[rgba(243,156,18,0.08)] border-b border-[rgba(243,156,18,0.2)] flex items-center justify-between gap-3">
+                <p className="text-sm text-[#B9770E] flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                  The faucet is Sepolia-only. Switch networks to continue.
+                </p>
+                <button
+                  onClick={() => switchChain({ chainId: SEPOLIA_CHAIN_ID })}
+                  className="shrink-0 rounded-lg border border-[#B9770E] px-3 py-1 text-xs font-semibold text-[#B9770E] hover:bg-[#B9770E] hover:text-white transition-colors"
+                >
+                  Switch to Sepolia
+                </button>
+              </div>
+            )}
 
             {/* Wallet Status */}
             {!isConnected ? (
@@ -181,7 +200,7 @@ export default function FaucetPage() {
                 <Clock className="w-3 h-3" />
                 Limited to 1 request per token per 24 hours.
               </p>
-              {selectedToken !== null ? (
+              {selectedToken !== null && !wrongNetwork ? (
                 <TokenFaucetButton
                   tokenIdx={selectedToken}
                   selectedToken={selectedToken}
@@ -195,7 +214,7 @@ export default function FaucetPage() {
                   disabled
                   className="w-full py-3 rounded-lg text-sm font-semibold bg-[#F3F4F5] text-[#878D95] cursor-not-allowed mt-4"
                 >
-                  {!isConnected ? "Connect Wallet" : "Select Token"}
+                  {!isConnected ? "Connect Wallet" : wrongNetwork ? "Switch to Sepolia" : "Select Token"}
                 </button>
               )}
             </div>

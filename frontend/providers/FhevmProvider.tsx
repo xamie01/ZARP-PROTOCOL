@@ -11,8 +11,8 @@
  */
 
 import React, { type ReactNode, useState, useEffect, useMemo } from "react";
-import { WagmiProvider, createConfig, http } from "wagmi";
-import { sepolia } from "wagmi/chains";
+import { WagmiProvider, http, fallback } from "wagmi";
+import { sepolia, mainnet } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   RainbowKitProvider,
@@ -22,28 +22,43 @@ import "@rainbow-me/rainbowkit/styles.css";
 
 import {
   SEPOLIA_RPC_URL,
+  MAINNET_RPC_URL,
   WALLETCONNECT_PROJECT_ID,
-  TARGET_CHAIN,
+  REGISTRY_ADDRESSES,
+  SEPOLIA_CHAIN_ID,
+  MAINNET_CHAIN_ID,
 } from "@/lib/registry-data";
 
 import { ZamaProvider, RelayerWeb, indexedDBStorage } from "@zama-fhe/react-sdk";
 import { WagmiSigner } from "@zama-fhe/react-sdk/wagmi";
-import { SepoliaConfig } from "@zama-fhe/sdk";
-import { KEYPAIR_TTL, SESSION_TTL } from "@/lib/fhevm";
+import { SepoliaConfig, MainnetConfig } from "@zama-fhe/sdk";
+import { KEYPAIR_TTL, SESSION_TTL, relayerUrlFor } from "@/lib/fhevm";
 
 /*************** Wagmi Configuration ***************/
 
 /**
  * Wagmi config using RainbowKit's getDefaultConfig for standard wallet connectors.
- * Uses a CORS-friendly public RPC for Sepolia reads.
+ * Registers both Ethereum mainnet and Sepolia. Each chain uses a `fallback`
+ * transport: the configured RPC first, then public backups, so a single
+ * throttled endpoint does not take the app down under load.
  */
 const wagmiConfig = getDefaultConfig({
   appName: "ZARP Registry",
   projectId: WALLETCONNECT_PROJECT_ID || "YOUR_PROJECT_ID",
-  chains: [sepolia],
+  chains: [mainnet, sepolia],
   transports: {
-    [sepolia.id]: http(SEPOLIA_RPC_URL),
+    [mainnet.id]: fallback([
+      http(MAINNET_RPC_URL),
+      http("https://eth.llamarpc.com"),
+      http("https://cloudflare-eth.com"),
+    ]),
+    [sepolia.id]: fallback([
+      http(SEPOLIA_RPC_URL),
+      http("https://rpc.sepolia.org"),
+      http("https://1rpc.io/sepolia"),
+    ]),
   },
+  ssr: true,
 });
 
 /*************** Query Client ***************/
@@ -91,14 +106,27 @@ export function FhevmProvider({ children }: FhevmProviderProps) {
     return new RelayerWeb({
       getChainId: () => signer.getChainId(),
       transports: {
-        [SepoliaConfig.chainId]: {
+        [SEPOLIA_CHAIN_ID]: {
           ...SepoliaConfig,
-          relayerUrl: process.env.NEXT_PUBLIC_ZAMA_RELAYER_URL || SepoliaConfig.relayerUrl,
+          relayerUrl: relayerUrlFor(SEPOLIA_CHAIN_ID),
           network: SEPOLIA_RPC_URL,
+        },
+        [MAINNET_CHAIN_ID]: {
+          ...MainnetConfig,
+          relayerUrl: relayerUrlFor(MAINNET_CHAIN_ID),
+          network: MAINNET_RPC_URL,
         },
       },
     });
   }, [mounted, signer]);
+
+  const registryAddresses = useMemo(
+    () => ({
+      [SEPOLIA_CHAIN_ID]: REGISTRY_ADDRESSES[SEPOLIA_CHAIN_ID],
+      [MAINNET_CHAIN_ID]: REGISTRY_ADDRESSES[MAINNET_CHAIN_ID],
+    }),
+    []
+  );
 
   if (!mounted || !signer || !relayer) {
     return null;
@@ -113,6 +141,7 @@ export function FhevmProvider({ children }: FhevmProviderProps) {
           storage={indexedDBStorage}
           keypairTTL={KEYPAIR_TTL}
           sessionTTL={SESSION_TTL}
+          registryAddresses={registryAddresses}
         >
           <RainbowKitProvider>{children}</RainbowKitProvider>
         </ZamaProvider>
