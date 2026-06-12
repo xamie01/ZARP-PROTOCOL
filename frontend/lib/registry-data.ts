@@ -115,11 +115,10 @@ export const SEPOLIA_PAIRS: WrapperPairConfig[] = [
 /**
  * Official Ethereum mainnet wrapper pairs.
  *
- * The confidential (ERC-7984) wrapper addresses are sourced from the Zama
- * Protocol docs. Underlying ERC-20 addresses are the canonical mainnet tokens.
- * Pairs whose underlying address is not yet pinned here (BRON, ZAMA, tGBP,
- * XAUt) are resolved at runtime from the on-chain registry via `useListPairs`,
- * which remains the source of truth for mainnet.
+ * All 7 wrapper addresses sourced from the Zama Protocol docs (official deployment):
+ * https://docs.zama.org/protocol/erc-7984/deployed-contracts#ethereum
+ *
+ * Underlying ERC-20 addresses are the canonical mainnet tokens.
  */
 export const MAINNET_PAIRS: WrapperPairConfig[] = [
   {
@@ -135,6 +134,26 @@ export const MAINNET_PAIRS: WrapperPairConfig[] = [
   {
     erc20: { address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", symbol: "WETH", decimals: 18 },
     erc7984: { address: "0xda9396b82634Ea99243cE51258B6A5Ae512D4893", symbol: "cWETH", decimals: 18 },
+    chainId: MAINNET_CHAIN_ID,
+  },
+  {
+    erc20: { address: "0xBA2C598E11eD093079cC324FCa5BbbA99F616E83", symbol: "BRON", decimals: 18 },
+    erc7984: { address: "0x85dE671c3bec1aDeD752c3Cea943521181C826bc", symbol: "cBRON", decimals: 18 },
+    chainId: MAINNET_CHAIN_ID,
+  },
+  {
+    erc20: { address: "0xA12CC123ba206d4031D1c7f6223D1C2Ec249f4f3", symbol: "ZAMA", decimals: 18 },
+    erc7984: { address: "0x80CB147Fd86dC6dEe3Eee7e4Cee33d1397d98071", symbol: "cZAMA", decimals: 18 },
+    chainId: MAINNET_CHAIN_ID,
+  },
+  {
+    erc20: { address: "0x27f6c8289550fce67f6b50bed1f519966afe5287", symbol: "tGBP", decimals: 18 },
+    erc7984: { address: "0xa873750ccBafD5ec7Dd13bfD5237d7129832eDD9", symbol: "ctGBP", decimals: 18 },
+    chainId: MAINNET_CHAIN_ID,
+  },
+  {
+    erc20: { address: "0x68749665FF8D2d112Fa859AA293F07A622782F38", symbol: "XAUt", decimals: 6 },
+    erc7984: { address: "0x73cc9aF9d6BEFdb3c3fAf8a5E8c05Cb95FdaEEf1", symbol: "cXAUt", decimals: 6 },
     chainId: MAINNET_CHAIN_ID,
   },
 ];
