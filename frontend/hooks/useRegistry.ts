@@ -93,11 +93,12 @@ export function useRegistry(): UseRegistryReturn {
     staleTime: STALE_TIME,
   });
 
-  /** Normalize all pairs into DisplayPair format. */
+  /** Normalize + MERGE on-chain and static pairs into DisplayPair format. */
   const pairs: DisplayPair[] = useMemo(() => {
-    /* Prefer on-chain SDK data when available. */
-    if (sdkPairs?.items && sdkPairs.items.length > 0) {
-      return sdkPairs.items.map((item: any) => {
+    /* Normalize on-chain SDK pairs (authoritative for whatever chain the SDK
+     * queried — typically only the connected chain). */
+    const onchain: DisplayPair[] = (sdkPairs?.items ?? [])
+      .map((item: any): DisplayPair => {
         const chainId = item.chainId ?? 11155111;
         return {
           erc20: {
@@ -114,17 +115,33 @@ export function useRegistry(): UseRegistryReturn {
           chainName: CHAIN_NAMES[chainId] ?? `Chain ${chainId}`,
           isValid: item.isValid ?? true,
         };
-      });
-    }
+      })
+      .filter((p) => p.erc7984.address);
 
-    /* Fallback to static data. */
-    return (staticPairs ?? ALL_STATIC_PAIRS).map((p) => ({
+    /* Normalize static pairs (covers every chain — this is what keeps the
+     * mainnet pairs present even when useListPairs only returns Sepolia). */
+    const staticAll: DisplayPair[] = (staticPairs ?? ALL_STATIC_PAIRS).map((p) => ({
       erc20: { address: p.erc20.address, symbol: p.erc20.symbol, decimals: p.erc20.decimals },
       erc7984: { address: p.erc7984.address, symbol: p.erc7984.symbol, decimals: p.erc7984.decimals },
       chainId: p.chainId,
       chainName: CHAIN_NAMES[p.chainId] ?? `Chain ${p.chainId}`,
       isValid: true,
     }));
+
+    /* Merge: the verified static set is the stable base (always 7 Sepolia +
+     * 7 mainnet, so the mainnet filter is never empty and the count never
+     * shrinks). On-chain pairs are appended only when genuinely new. Dedup key
+     * = chainId + confidential address. */
+    const key = (p: DisplayPair) => `${p.chainId}:${p.erc7984.address.toLowerCase()}`;
+    const seen = new Set(staticAll.map(key));
+    const merged = [...staticAll];
+    for (const o of onchain) {
+      if (!seen.has(key(o))) {
+        seen.add(key(o));
+        merged.push(o);
+      }
+    }
+    return merged;
   }, [sdkPairs, staticPairs]);
 
   /** Apply search + chain filter. */
