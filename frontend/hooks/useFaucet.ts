@@ -47,7 +47,7 @@ const getStorageKey = (wallet: string, token: string) =>
  * @param tokenAddress - The address of the mock token.
  * @returns Faucet state, eligibility status, and request function.
  */
-export function useFaucet(tokenAddress: Address): UseFaucetReturn {
+export function useFaucet(tokenAddress: Address, decimals: number = 18): UseFaucetReturn {
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
   const publicClient = usePublicClient();
@@ -93,7 +93,7 @@ export function useFaucet(tokenAddress: Address): UseFaucetReturn {
     setTx(undefined);
 
     try {
-      const amount = getFaucetAmount();
+      const amount = getFaucetAmount(decimals);
       const hash = await writeContractAsync({
         address: tokenAddress,
         abi: FAUCET_ABI,

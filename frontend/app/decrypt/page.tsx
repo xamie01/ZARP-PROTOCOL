@@ -197,8 +197,22 @@ export default function DecryptPage() {
 
             {/* Error */}
             {error && (
-              <div className="px-6 py-4 bg-[rgba(231,76,60,0.08)] border-t border-[rgba(231,76,60,0.15)]">
+              <div className="px-6 py-4 bg-[rgba(231,76,60,0.08)] border-t border-[rgba(231,76,60,0.15)] flex flex-col gap-2">
                 <p className="text-sm text-[#E74C3C]">{error}</p>
+                {!isLoading && (
+                  <button
+                    onClick={() => {
+                      if (selectedToken !== null) {
+                        decryptKnown(selectedToken);
+                      } else if (tokenAddress) {
+                        decrypt(tokenAddress);
+                      }
+                    }}
+                    className="self-start text-xs font-semibold bg-[#E74C3C] text-white hover:bg-[#C0392B] rounded px-3 py-1.5 transition-all"
+                  >
+                    Retry Decryption
+                  </button>
+                )}
               </div>
             )}
 

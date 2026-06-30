@@ -126,6 +126,9 @@ export function useDecrypt(): UseDecryptReturn {
       INSUFFICIENT_CONFIDENTIAL_BALANCE: () => "No encrypted balance exists for this token.",
       _: () => {
         const errMsg = (err as Error)?.message || "Unknown error";
+        if (errMsg.includes("FHE worker") || errMsg.includes("Worker") || errMsg.includes("WASM")) {
+          return "FHE engine is still loading. Please wait a moment and try again.";
+        }
         if (errMsg.includes("timeout") || errMsg.includes("Timeout")) {
           return "Relayer timed out after 30 seconds. Please retry.";
         }
@@ -155,7 +158,11 @@ export function useDecrypt(): UseDecryptReturn {
     setStep("signing");
 
     try {
-      if (!isAllowed) {
+      /* Small delay to let the FHE WASM worker finish bootstrapping */
+      await new Promise(r => setTimeout(r, 150));
+      /* Query the SDK directly to avoid stale closure from useIsAllowed */
+      const currentlyAllowed = await sdk.credentials.isAllowed([addr]).catch(() => false);
+      if (!currentlyAllowed) {
         await allow([addr]);
       }
       setSignature("eip712_session_cached");

@@ -21,6 +21,7 @@ export default function WrapPage() {
     setMode,
     setAmount,
     selectPair,
+    erc20Balance,
     formattedErc20Balance,
     formattedConfidentialBalance,
     isLoading,
@@ -247,7 +248,14 @@ export default function WrapPage() {
                   MAX
                 </button>
               </div>
-              <p className="text-xs text-[#A7ACB3] mt-1.5">Balance: {balance}</p>
+              <p className="text-xs text-[#A7ACB3] mt-1.5 flex items-center gap-1">
+                Balance:{" "}
+                {state.selectedPair && balance === "0" && erc20Balance === undefined ? (
+                  <span className="inline-block w-16 h-3 rounded bg-gradient-to-r from-[#E5E7E9] via-[#F3F4F5] to-[#E5E7E9] animate-pulse" />
+                ) : (
+                  balance
+                )}
+              </p>
             </div>
 
             {/* Direction Toggle */}
@@ -312,7 +320,7 @@ export default function WrapPage() {
               {activeTab === "unshield" && (
                 <p className="text-xs text-[#A7ACB3] mt-3 text-center flex items-center justify-center gap-1">
                   <Lock className="w-3 h-3" />
-                  Two-phase withdrawal: The SDK handles both phases automatically.
+                   Two on-chain transactions: burn + finalize. Both are submitted automatically — just confirm each in your wallet.
                 </p>
               )}
             </div>
@@ -335,7 +343,7 @@ export default function WrapPage() {
               <Lock className="w-6 h-6 text-[#5D5FEF]" strokeWidth={2} />
               <h4 className="text-lg font-semibold text-[#1A1D20] mt-3">Unshield</h4>
               <p className="text-sm text-[#656B73] mt-1 leading-relaxed">
-                Two-phase withdrawal. The SDK handles both phases automatically.
+                Withdraw your confidential ERC-7984 tokens back to public ERC-20. The wrapper burns your encrypted balance and requests decryption, then the relayer finalises the withdrawal and credits public tokens to your wallet. Both transactions are submitted automatically.
               </p>
             </div>
           </ScrollReveal>

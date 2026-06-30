@@ -5,7 +5,7 @@
  */
 
 import type { Address } from "viem";
-import { FAUCET_CONTRACT_ADDRESS, FAUCET_AMOUNT } from "@/lib/registry-data";
+import { FAUCET_CONTRACT_ADDRESS, FAUCET_AMOUNT, getFaucetAmountForDecimals } from "@/lib/registry-data";
 
 /*************** Faucet Contract ABI ***************/
 
@@ -70,9 +70,11 @@ export function getFaucetAddress(): Address {
 }
 
 /**
- * Get the default mint amount for the faucet.
+ * Get the mint amount for the faucet.
+ * When decimals is provided, returns 1,000 human-readable tokens in base units.
  */
-export function getFaucetAmount(): bigint {
+export function getFaucetAmount(decimals?: number): bigint {
+  if (decimals !== undefined) return getFaucetAmountForDecimals(decimals);
   return FAUCET_AMOUNT;
 }
 

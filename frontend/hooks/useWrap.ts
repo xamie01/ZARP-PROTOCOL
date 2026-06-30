@@ -105,6 +105,8 @@ export function useWrap(): UseWrapReturn {
     args: userAddress ? [userAddress] : undefined,
     query: {
       enabled: !!userAddress && !!state.selectedPair && tokenAddress !== "0x0000000000000000000000000000000000000000",
+      refetchInterval: 10_000,
+      refetchOnMount: 'always' as const,
     },
   });
 

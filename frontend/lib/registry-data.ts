@@ -225,8 +225,19 @@ export const KNOWN_TOKEN_PAIRS = SEPOLIA_PAIRS.map((pair) => ({
 export const FAUCET_CONTRACT_ADDRESS: Address =
   "0x9b5Cd13b8eFbB58Dc25A05CF411D8056058aDFfF" as Address;
 
-/** Amount of tokens dispensed per faucet request (base units). */
+/** Amount of human-readable tokens dispensed per faucet request. */
+export const FAUCET_HUMAN_AMOUNT = 1000n;
+
+/** @deprecated Use getFaucetAmountForDecimals instead. */
 export const FAUCET_AMOUNT = 1000000n;
+
+/**
+ * Compute the faucet mint amount in base units for a given token decimals.
+ * Always mints 1,000 human-readable tokens.
+ */
+export function getFaucetAmountForDecimals(decimals: number): bigint {
+  return FAUCET_HUMAN_AMOUNT * (10n ** BigInt(decimals));
+}
 
 /** Default token decimals. */
 export const DEFAULT_DECIMALS = 18;

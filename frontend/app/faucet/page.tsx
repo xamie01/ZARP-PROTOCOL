@@ -12,6 +12,7 @@ import type { Address } from "viem";
 const ERC20_TOKENS = WRAPPER_PAIRS.map((p) => ({
   symbol: p.erc20.symbol,
   address: p.erc20.address as Address,
+  decimals: p.erc20.decimals,
 }));
 
 interface RequestRecord {
@@ -37,7 +38,7 @@ function TokenFaucetButton({
   onStatusChange: (id: string, status: "sent" | "failed") => void;
 }) {
   const token = ERC20_TOKENS[tokenIdx];
-  const { request, isLoading, canRequest } = useFaucet(token.address);
+  const { request, isLoading, canRequest } = useFaucet(token.address, token.decimals);
 
   const handleRequest = async () => {
     if (!isConnected) {

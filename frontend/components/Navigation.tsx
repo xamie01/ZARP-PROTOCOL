@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAccount, useDisconnect } from "wagmi";
+import { useAccount, useDisconnect, useSwitchChain, useChainId } from "wagmi";
+import { sepolia, mainnet } from "wagmi/chains";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { Menu, X, Shield, Wallet } from "lucide-react";
+import { Menu, X, Eye, Wallet } from "lucide-react";
 
 const NAV_LINKS = [
   { label: "Registry", href: "/registry" },
@@ -25,6 +26,10 @@ export function Navigation() {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const { openConnectModal } = useConnectModal();
+  const chainId = useChainId();
+  const { switchChain } = useSwitchChain();
+  const chainName = chainId === sepolia.id ? "Sepolia" : chainId === mainnet.id ? "Mainnet" : `Chain ${chainId}`;
+  const chainColor = chainId === sepolia.id ? "bg-[#00B4D8]" : "bg-[#2ECC71]";
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -48,7 +53,7 @@ export function Navigation() {
         <div className="max-w-[1200px] mx-auto px-6 h-full flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <Shield className="w-7 h-7 text-[#FFD100] group-hover:scale-110 transition-transform" />
+            <Eye className="w-7 h-7 text-[#FFD100] group-hover:scale-110 transition-transform" />
             <span className="text-[15px] font-semibold text-[#1A1D20] tracking-tight">
               ZARP Protocol
             </span>
@@ -76,6 +81,28 @@ export function Navigation() {
 
           {/* Wallet + Mobile Toggle */}
           <div className="flex items-center gap-3">
+            {isConnected && (
+              <div className="relative group">
+                <button className="flex items-center gap-1.5 bg-[#F3F4F5] rounded-lg px-3 py-2 text-xs font-medium text-[#4D535A] hover:bg-[#E5E7E9] transition-all duration-200">
+                  <span className={`w-2 h-2 rounded-full ${chainColor}`} />
+                  {chainName}
+                </button>
+                <div className="absolute right-0 top-full mt-2 w-40 bg-white rounded-xl border border-[#E5E7E9] shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 p-1.5 z-50">
+                  <button
+                    onClick={() => switchChain({ chainId: sepolia.id })}
+                    className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors flex items-center gap-2 ${chainId === sepolia.id ? 'bg-[#FFD100]/10 text-[#1A1D20] font-medium' : 'text-[#4D535A] hover:bg-[#F3F4F5]'}`}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-[#00B4D8]" />Sepolia
+                  </button>
+                  <button
+                    onClick={() => switchChain({ chainId: mainnet.id })}
+                    className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors flex items-center gap-2 ${chainId === mainnet.id ? 'bg-[#FFD100]/10 text-[#1A1D20] font-medium' : 'text-[#4D535A] hover:bg-[#F3F4F5]'}`}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-[#2ECC71]" />Mainnet
+                  </button>
+                </div>
+              </div>
+            )}
             {isConnected && address ? (
               <div className="relative group">
                 <button className="flex items-center gap-2 bg-black text-white rounded-lg px-4 py-2 text-xs font-medium hover:bg-[#FFD100] hover:text-black transition-all duration-300">

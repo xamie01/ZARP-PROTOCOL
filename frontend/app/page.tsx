@@ -1,6 +1,10 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { ChevronDown, Shield, Lock, ExternalLink, Check } from "lucide-react";
 import dynamic from "next/dynamic";
+import gsap from "gsap";
 import SectionTitle from "@/components/SectionTitle";
 import ScrollReveal from "@/components/ScrollReveal";
 
@@ -60,19 +64,19 @@ const steps = [
 ];
 
 const codeLines = [
-  { num: 1, content: "// Import the ZARP SDK", type: "comment" },
-  { num: 2, content: "import { ZarpSDK } from '@zarp/protocol-sdk';", type: "code" },
-  { num: 3, content: "", type: "empty" },
-  { num: 4, content: "// Initialize the SDK", type: "comment" },
-  { num: 5, content: "const zarp = new ZarpSDK({", type: "code" },
-  { num: 6, content: "  network: 'sepolia',", type: "code" },
-  { num: 7, content: "  provider: window.ethereum", type: "code" },
-  { num: 8, content: "});", type: "code" },
-  { num: 9, content: "", type: "empty" },
-  { num: 10, content: "// Shield 100 USDC", type: "comment" },
-  { num: 11, content: "const tx = await zarp.shield({", type: "code" },
-  { num: 12, content: "  token: '0x9b5Cd1...8aDFfF',", type: "code" },
-  { num: 13, content: "  amount: '100000000'", type: "code" },
+  { num: 1,  content: "// Zama FHE React SDK", type: "comment" },
+  { num: 2,  content: "import { useShield } from '@zama-fhe/react-sdk';", type: "code" },
+  { num: 3,  content: "", type: "empty" },
+  { num: 4,  content: "// Shield 100 USDC to cUSDC", type: "comment" },
+  { num: 5,  content: "const { mutateAsync: shield } = useShield({", type: "code" },
+  { num: 6,  content: "  tokenAddress: '0x9b5C...DFfF',", type: "code" },
+  { num: 7,  content: "  wrapperAddress: '0x7c5B...3639',", type: "code" },
+  { num: 8,  content: "});", type: "code" },
+  { num: 9,  content: "", type: "empty" },
+  { num: 10, content: "// Approve + wrap in one call", type: "comment" },
+  { num: 11, content: "await shield({", type: "code" },
+  { num: 12, content: "  amount: 100_000_000n,  // 100 USDC", type: "code" },
+  { num: 13, content: "  approvalStrategy: 'exact',", type: "code" },
   { num: 14, content: "});", type: "code" },
 ];
 
@@ -116,23 +120,42 @@ function getLineColor(type: string, content: string) {
 
 export default function HomePage() {
   const previewPairs = TOKEN_PAIRS.slice(0, 5);
+  const heroRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (heroRef.current) {
+      const targets = heroRef.current.querySelectorAll(".reveal-target");
+      gsap.fromTo(
+        targets,
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1.0,
+          stagger: 0.12,
+          ease: "power4.out",
+          delay: 0.1,
+        }
+      );
+    }
+  }, []);
 
   return (
     <>
       {/* ───── Hero ───── */}
-      <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
+      <section ref={heroRef} className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
         <ShieldSphere />
         <div className="relative z-10 text-center max-w-[800px] px-6">
-          <div className="animate-[fadeInUp_600ms_ease_200ms_both]">
+          <div className="reveal-target opacity-0">
             <h1 className="text-display-xl text-black">ZARP</h1>
           </div>
-          <div className="animate-[fadeInUp_600ms_ease_350ms_both]">
+          <div className="reveal-target opacity-0">
             <h1 className="text-display-xl text-black -mt-4">Protocol</h1>
           </div>
-          <p className="text-lg text-[#656B73] mt-4 max-w-[520px] mx-auto leading-relaxed animate-[fadeInUp_500ms_ease_500ms_both]">
-            Confidential token wrapping. Shield your ERC-20 assets with ERC-7984 privacy.
+          <p className="reveal-target opacity-0 text-lg text-[#656B73] mt-4 max-w-[520px] mx-auto leading-relaxed">
+            Shield your Ethereum native tokens using Zama&apos;s FHE encryption layer.
           </p>
-          <div className="flex items-center justify-center gap-4 mt-8 animate-[fadeInUp_400ms_ease_650ms_both]">
+          <div className="reveal-target opacity-0 flex items-center justify-center gap-4 mt-8">
             <Link href="/wrap" className="btn-yellow inline-flex items-center">
               Get Started
             </Link>
@@ -141,7 +164,7 @@ export default function HomePage() {
             </Link>
           </div>
         </div>
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-[fadeIn_400ms_ease_1200ms_both]">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 reveal-target opacity-0">
           <ChevronDown className="w-5 h-5 text-[#A7ACB3] animate-bounce-scroll" />
         </div>
       </section>
@@ -320,7 +343,7 @@ export default function HomePage() {
                   <span className="w-3 h-3 rounded-full bg-[#E74C3C]" />
                   <span className="w-3 h-3 rounded-full bg-[#FFD100]" />
                   <span className="w-3 h-3 rounded-full bg-[#2ECC71]" />
-                  <span className="flex-1 text-center font-mono text-xs text-[#656B73]">zarp-sdk.example</span>
+                  <span className="flex-1 text-center font-mono text-xs text-[#656B73]">shield-tokens.tsx</span>
                 </div>
                 <div className="p-4 overflow-x-auto">
                   {codeLines.map((line) => (

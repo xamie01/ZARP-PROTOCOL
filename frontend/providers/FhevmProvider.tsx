@@ -44,7 +44,7 @@ import { KEYPAIR_TTL, SESSION_TTL, relayerUrlFor } from "@/lib/fhevm";
  */
 const wagmiConfig = getDefaultConfig({
   appName: "ZARP Registry",
-  projectId: WALLETCONNECT_PROJECT_ID || "YOUR_PROJECT_ID",
+  projectId: WALLETCONNECT_PROJECT_ID || "3fcc6bba6e1c4484b96f5b9cc8221804",
   chains: [mainnet, sepolia],
   transports: {
     [mainnet.id]: fallback([
@@ -143,7 +143,7 @@ export function FhevmProvider({ children }: FhevmProviderProps) {
           sessionTTL={SESSION_TTL}
           registryAddresses={registryAddresses}
         >
-          <RainbowKitProvider>{children}</RainbowKitProvider>
+          <RainbowKitProvider initialChain={sepolia}>{children}</RainbowKitProvider>
         </ZamaProvider>
       </QueryClientProvider>
     </WagmiProvider>
