@@ -147,10 +147,10 @@ export default function HomePage() {
         <ShieldSphere />
         <div className="relative z-10 text-center max-w-[800px] px-6">
           <div className="reveal-target opacity-0">
-            <h1 className="text-display-xl text-black">ZARP</h1>
+            <h1 className="text-display-xl text-black dark:text-[#FFD100]">ZARP</h1>
           </div>
           <div className="reveal-target opacity-0">
-            <h1 className="text-display-xl text-black -mt-4">Protocol</h1>
+            <h1 className="text-display-xl text-black dark:text-[#FFD100] -mt-4">Protocol</h1>
           </div>
           <p className="reveal-target opacity-0 text-lg text-[#656B73] mt-4 max-w-[520px] mx-auto leading-relaxed">
             Shield your Ethereum native tokens using Zama&apos;s FHE encryption layer.

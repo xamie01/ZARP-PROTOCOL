@@ -9,6 +9,7 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Menu, X, Wallet, Sun, Moon } from "lucide-react";
 
 const NAV_LINKS = [
+  { label: "Home", href: "/" },
   { label: "Registry", href: "/registry" },
   { label: "Wrap", href: "/wrap" },
   { label: "Decrypt", href: "/decrypt" },
