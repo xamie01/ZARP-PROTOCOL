@@ -80,6 +80,86 @@
     --color-grey-900: #FFFFFF;
   }
 
+  /* Force light colors on dark elements in dark mode */
+  .dark body {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+  }
+
+  /* Override hardcoded black/dark texts */
+  .dark .text-\[\#1A1D20\] {
+    color: #FFFFFF !important;
+  }
+  .dark .text-\[\#4D535A\] {
+    color: #CDD0D4 !important;
+  }
+  .dark .text-\[\#656B73\] {
+    color: #A7ACB3 !important;
+  }
+
+  /* Override hardcoded white/near-white backgrounds */
+  .dark .bg-white {
+    background-color: #0A0A0C !important;
+  }
+  .dark .bg-\[\#FAFBFC\] {
+    background-color: #141416 !important;
+  }
+  .dark .bg-\[\#F3F4F5\] {
+    background-color: #1D1D20 !important;
+  }
+  .dark .bg-\[\#F8F9FA\]\/95 {
+    background-color: rgba(0, 0, 0, 0.95) !important;
+  }
+
+  /* Override hardcoded borders */
+  .dark .border-\[\#E5E7E9\] {
+    border-color: #2A2D31 !important;
+  }
+  .dark .border-b-\[\#E5E7E9\] {
+    border-bottom-color: #2A2D31 !important;
+  }
+  .dark .border-t-\[\#E5E7E9\] {
+    border-top-color: #2A2D31 !important;
+  }
+  .dark .border-y-\[\#E5E7E9\] {
+    border-top-color: #2A2D31 !important;
+    border-bottom-color: #2A2D31 !important;
+  }
+  .dark .border-\[\#CDD0D4\] {
+    border-color: #33383D !important;
+  }
+  .dark .border-b-\[\#F3F4F5\] {
+    border-bottom-color: #1D1D20 !important;
+  }
+  .dark .border-t-\[\#F3F4F5\] {
+    border-top-color: #1D1D20 !important;
+  }
+
+  /* Table-specific enhancements */
+  .dark tr.border-b {
+    border-bottom-color: #1D1D20 !important;
+  }
+  .dark td {
+    color: #CDD0D4 !important;
+  }
+  .dark th {
+    color: #A7ACB3 !important;
+    border-bottom: 1px solid #2A2D31 !important;
+  }
+  .dark tr:hover {
+    background-color: rgba(255, 209, 0, 0.06) !important;
+  }
+  
+  /* Input fields */
+  .dark input {
+    background-color: #141416 !important;
+    color: #FFFFFF !important;
+    border-color: #33383D !important;
+  }
+  .dark input:focus {
+    border-color: #FFD100 !important;
+  }
+
   * {
     border-color: hsl(var(--border));
   }
