@@ -173,17 +173,17 @@ export function useWrap(): UseWrapReturn {
   }, [sdk, allow, wrapperAddress, refetchIsAllowed, refetchConfidential]);
 
   const { mutateAsync: shieldMutation } = useShield({
-    tokenAddress,
+    tokenAddress: wrapperAddress || "0x0000000000000000000000000000000000000000",
     wrapperAddress,
   });
 
   const { mutateAsync: unshieldMutation } = useUnshield({
-    tokenAddress,
+    tokenAddress: wrapperAddress || "0x0000000000000000000000000000000000000000",
     wrapperAddress,
   });
 
   const { mutateAsync: resumeMutation } = useResumeUnshield({
-    tokenAddress,
+    tokenAddress: wrapperAddress || "0x0000000000000000000000000000000000000000",
     wrapperAddress,
   });
 
