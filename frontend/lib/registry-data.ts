@@ -108,6 +108,11 @@ export const SEPOLIA_PAIRS: WrapperPairConfig[] = [
     erc7984: { address: "0xe4FcF848739845BC81Dee1d5352cf3844F0a60C7", symbol: "cXAUtMock", decimals: 18 },
     chainId: SEPOLIA_CHAIN_ID,
   },
+  {
+    erc20: { address: "0xf6Ef9ADB61A48E29E36bc873070A46A3D2667ff3", symbol: "tGBP", decimals: 18 },
+    erc7984: { address: "0x167DC962808B32CFFFc7e14B5018c0bE06A3A208", symbol: "ctGBP", decimals: 18 },
+    chainId: SEPOLIA_CHAIN_ID,
+  },
 ];
 
 /*************** Mainnet Pairs (official wrappers) ***************/
@@ -201,24 +206,6 @@ export function getStaticPairs(chainId: number): WrapperPairConfig[] {
  */
 export const WRAPPER_PAIRS = SEPOLIA_PAIRS;
 
-/** Sepolia cTokenMocks claimable from the faucet (faucet is Sepolia-only). */
-export const CTOKEN_MOCKS = SEPOLIA_PAIRS.map((p) => ({
-  address: p.erc20.address,
-  symbol: p.erc20.symbol,
-  decimals: p.erc20.decimals,
-}));
-
-/** Known token pairs mapped to the app's TokenPair-ish shape (Sepolia). */
-export const KNOWN_TOKEN_PAIRS = SEPOLIA_PAIRS.map((pair) => ({
-  name: pair.erc20.symbol.replace("Mock", ""),
-  symbol: pair.erc20.symbol,
-  tokenAddress: pair.erc20.address as Address,
-  confidentialTokenAddress: pair.erc7984.address as Address,
-  decimals: pair.erc20.decimals,
-  chainId: pair.chainId,
-  isValid: true,
-}));
-
 /*************** Contract Addresses ***************/
 
 /** cTokenMock faucet default target (USDCMock on Sepolia). */
@@ -227,9 +214,6 @@ export const FAUCET_CONTRACT_ADDRESS: Address =
 
 /** Amount of human-readable tokens dispensed per faucet request. */
 export const FAUCET_HUMAN_AMOUNT = 1000n;
-
-/** @deprecated Use getFaucetAmountForDecimals instead. */
-export const FAUCET_AMOUNT = 1000000n;
 
 /**
  * Compute the faucet mint amount in base units for a given token decimals.

@@ -9,7 +9,7 @@ import { useFaucet } from "@/hooks/useFaucet";
 import { WRAPPER_PAIRS, SEPOLIA_CHAIN_ID } from "@/lib/registry-data";
 import type { Address } from "viem";
 
-const ERC20_TOKENS = WRAPPER_PAIRS.map((p) => ({
+const ERC20_TOKENS = WRAPPER_PAIRS.filter((p) => p.erc20.symbol.endsWith("Mock")).map((p) => ({
   symbol: p.erc20.symbol,
   address: p.erc20.address as Address,
   decimals: p.erc20.decimals,

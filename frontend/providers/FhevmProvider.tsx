@@ -129,7 +129,17 @@ export function FhevmProvider({ children }: FhevmProviderProps) {
   );
 
   if (!mounted || !signer || !relayer) {
-    return null;
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#F8F9FA]">
+        <div className="relative flex items-center justify-center">
+          <div className="w-16 h-16 rounded-full border-2 border-[#E5E7E9] border-t-[#FFD100] animate-spin" />
+          <div className="absolute w-4 h-4 rounded-full bg-[#FFD100]" />
+        </div>
+        <p className="mt-4 text-xs font-medium uppercase tracking-wider text-[#878D95] animate-pulse">
+          Initializing FHE Environment
+        </p>
+      </div>
+    );
   }
 
   return (

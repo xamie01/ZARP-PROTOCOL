@@ -50,10 +50,6 @@ export type DecryptStep =
 export interface UseDecryptReturn {
   /** Trigger the full decrypt flow for a confidential token. */
   decrypt: (tokenAddress: Address) => Promise<void>;
-  /** The EIP-712 signature hex (populated after signing step). */
-  signature: string | null;
-  /** Relayer job identifier (populated after submitting step). */
-  relayerJobId: string | null;
   /** Decrypted plaintext balance (populated on success). */
   decryptedValue: bigint | null;
   /** Current step in the decrypt lifecycle. */
@@ -90,8 +86,6 @@ const RELAYER_TIMEOUT_MS = 30_000;
 export function useDecrypt(): UseDecryptReturn {
   const [step, setStep] = useState<DecryptStep>("idle");
   const [tokenAddress, setTokenAddress] = useState<Address | null>(null);
-  const [signature, setSignature] = useState<string | null>(null);
-  const [relayerJobId, setRelayerJobId] = useState<string | null>(null);
   const [decryptedValue, setDecryptedValue] = useState<bigint | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -109,8 +103,6 @@ export function useDecrypt(): UseDecryptReturn {
     abortRef.current?.abort();
     setStep("idle");
     setTokenAddress(null);
-    setSignature(null);
-    setRelayerJobId(null);
     setDecryptedValue(null);
     setError(null);
   }, []);
@@ -149,8 +141,6 @@ export function useDecrypt(): UseDecryptReturn {
     abortRef.current = controller;
 
     setTokenAddress(addr);
-    setSignature(null);
-    setRelayerJobId(null);
     setDecryptedValue(null);
     setError(null);
 
@@ -165,7 +155,6 @@ export function useDecrypt(): UseDecryptReturn {
       if (!currentlyAllowed) {
         await allow([addr]);
       }
-      setSignature("eip712_session_cached");
     } catch (err) {
       handleError(err);
       return;
@@ -178,7 +167,6 @@ export function useDecrypt(): UseDecryptReturn {
 
     try {
       const token = sdk.createReadonlyToken(addr);
-      setRelayerJobId("relayer_decrypt_pending");
 
       if (controller.signal.aborted) return;
 
@@ -203,7 +191,6 @@ export function useDecrypt(): UseDecryptReturn {
 
       /* Step 4: Success */
       setDecryptedValue(balance);
-      setRelayerJobId("relayer_decrypt_complete");
       setStep("success");
     } catch (err) {
       if (!controller.signal.aborted) {
@@ -216,8 +203,6 @@ export function useDecrypt(): UseDecryptReturn {
 
   return {
     decrypt,
-    signature,
-    relayerJobId,
     decryptedValue,
     step,
     isLoading,

@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { Wallet, Shield, Lock, ArrowUpDown, ChevronDown } from "lucide-react";
 import { useAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { parseUnits } from "viem";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useWrap } from "@/hooks/useWrap";
 import { useChainPairs } from "@/hooks/useChainPairs";
@@ -88,7 +89,7 @@ export default function WrapPage() {
       return;
     }
     if (!state.selectedPair || !state.amount) return;
-    const amt = BigInt(Math.floor(parseFloat(state.amount) * 10 ** (state.selectedPair.decimals ?? 18)));
+    const amt = parseUnits(state.amount, state.selectedPair.decimals ?? 18);
     if (activeTab === "shield") {
       await shield(amt);
     } else {

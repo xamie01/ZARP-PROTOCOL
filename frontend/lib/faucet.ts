@@ -4,8 +4,7 @@
  * Sepolia cTokenMock faucet.
  */
 
-import type { Address } from "viem";
-import { FAUCET_CONTRACT_ADDRESS, FAUCET_AMOUNT, getFaucetAmountForDecimals } from "@/lib/registry-data";
+import { getFaucetAmountForDecimals } from "@/lib/registry-data";
 
 /*************** Faucet Contract ABI ***************/
 
@@ -61,39 +60,9 @@ export const FAUCET_ABI = [
 /*************** Faucet Helpers ***************/
 
 /**
- * Get the default faucet token address (USDCMock on Sepolia).
- * The faucet UI mints per-token, calling mint() directly on each mock's own
- * address; this is only the default fallback target.
- */
-export function getFaucetAddress(): Address {
-  return FAUCET_CONTRACT_ADDRESS;
-}
-
-/**
  * Get the mint amount for the faucet.
- * When decimals is provided, returns 1,000 human-readable tokens in base units.
+ * Always returns 1,000 tokens in base units for the specified decimals (defaults to 18).
  */
-export function getFaucetAmount(decimals?: number): bigint {
-  if (decimals !== undefined) return getFaucetAmountForDecimals(decimals);
-  return FAUCET_AMOUNT;
-}
-
-/**
- * Build the mint transaction config for wagmi's useWriteContract.
- *
- * @param recipientAddress - The address to mint tokens to.
- * @param amount - Amount to mint (defaults to FAUCET_AMOUNT).
- * @returns Config object for useWriteContract.
- */
-export function buildMintConfig(
-  tokenAddress: Address,
-  recipientAddress: Address,
-  amount: bigint = FAUCET_AMOUNT
-) {
-  return {
-    address: tokenAddress,
-    abi: FAUCET_ABI,
-    functionName: "mint" as const,
-    args: [recipientAddress, amount] as const,
-  };
+export function getFaucetAmount(decimals: number = 18): bigint {
+  return getFaucetAmountForDecimals(decimals);
 }

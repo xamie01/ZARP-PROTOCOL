@@ -11,6 +11,25 @@ Built with **Next.js 14 (App Router)**, **wagmi v2 + RainbowKit**, and the **`@z
 
 ---
 
+## Live Demo & Video
+
+🔗 **Live app:** [https://zarp-protocol.vercel.app](https://zarp-protocol.vercel.app)  
+🎥 **Video walkthrough (~3 min):** [Watch on Loom](YOUR_VIDEO_URL_HERE)
+
+---
+
+## Screenshots
+
+<!-- Replace the placeholder URLs below with actual screenshot/GIF paths -->
+
+| Registry Browser | Wrap / Unwrap | Decrypt Balance |
+|:---:|:---:|:---:|
+| ![Registry](YOUR_SCREENSHOT_REGISTRY.png) | ![Wrap](YOUR_SCREENSHOT_WRAP.png) | ![Decrypt](YOUR_SCREENSHOT_DECRYPT.png) |
+
+> **How to add your screenshots:** Take a screenshot or GIF of each page, save the files in the repo root (e.g. `screenshots/registry.png`), then replace `YOUR_SCREENSHOT_REGISTRY.png` etc. with the relative path (e.g. `screenshots/registry.png`).
+
+---
+
 ## Architecture
 
 ```
@@ -93,6 +112,17 @@ Registry contract addresses (`lib/registry-data.ts`):
 
 ---
 
+## How this satisfies the bounty
+
+This submission directly addresses all requirements of the **Zama Developer Program Bounty Track — Confidential Wrapper Registry App**:
+- **Confidential Wrappers Registry integration**: Surfaces all official ERC-20 ↔ ERC-7984 pairs registered on-chain via the `WrappersRegistry` contract on both Sepolia and Ethereum Mainnet. Includes a static configuration fallback.
+- **Shield and Unshield Operations**: Users can deposit underlying tokens to mint confidential wrappers, and burn/finalize them to withdraw.
+- **EIP-712 User Decryption**: Leverages `@zama-fhe/sdk`'s session keypair signature flow to securely request threshold decryption of private balances from the Zama Relayer KMS.
+- **IP-Based Relayer Proxy**: Keeps the mainnet relayer key server-side inside Next.js API routing to prevent leakage, hardened with origin/referer verification and IP rate-limiting.
+- **Full Testnet Faucet Support**: Integrates an easy-to-use minting interface for the official cTokenMock underlying tokens on Sepolia.
+
+---
+
 ## Adding a new ERC-20 ↔ ERC-7984 pair
 
 There are two ways a pair shows up in the app.
@@ -166,4 +196,4 @@ frontend/
 
 ## License
 
-Open source. See repository for details.
+MIT License. See [LICENSE](./LICENSE) for details.

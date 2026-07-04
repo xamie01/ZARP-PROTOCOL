@@ -23,6 +23,34 @@ const RELAYER_CONFIGS: Record<string, { relayerUrl: string }> = {
   [String(SepoliaConfig.chainId)]: SepoliaConfig,
 };
 
+interface TokenBucket {
+  tokens: number;
+  lastRefill: number;
+}
+
+const rateLimitMap = new Map<string, TokenBucket>();
+const LIMIT = 60; // Max 60 requests per minute
+const REFILL_RATE = LIMIT / 60000; // Refill tokens per millisecond
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  let bucket = rateLimitMap.get(ip);
+  if (!bucket) {
+    bucket = { tokens: LIMIT, lastRefill: now };
+    rateLimitMap.set(ip, bucket);
+  }
+
+  const elapsed = now - bucket.lastRefill;
+  bucket.tokens = Math.min(LIMIT, bucket.tokens + elapsed * REFILL_RATE);
+  bucket.lastRefill = now;
+
+  if (bucket.tokens >= 1) {
+    bucket.tokens -= 1;
+    return false;
+  }
+  return true;
+}
+
 /** CORS preflight: advertise the headers the SDK sends. */
 export async function OPTIONS() {
   return new Response(null, {
@@ -37,6 +65,37 @@ export async function OPTIONS() {
 }
 
 async function proxy(req: NextRequest, segments: string[]): Promise<Response> {
+  /* 1. Origin/Referer check to reject hotlinking of the proxy */
+  const host = req.headers.get("host");
+  const origin = req.headers.get("origin");
+  const referer = req.headers.get("referer");
+
+  if (origin) {
+    try {
+      const originUrl = new URL(origin);
+      if (originUrl.host !== host) {
+        return new Response("Unauthorized origin", { status: 403 });
+      }
+    } catch {
+      return new Response("Invalid origin header", { status: 400 });
+    }
+  } else if (referer) {
+    try {
+      const refererUrl = new URL(referer);
+      if (refererUrl.host !== host) {
+        return new Response("Unauthorized referer", { status: 403 });
+      }
+    } catch {
+      return new Response("Invalid referer header", { status: 400 });
+    }
+  }
+
+  /* 2. Rate limiting by IP address */
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || req.ip || "127.0.0.1";
+  if (isRateLimited(ip)) {
+    return new Response("Too many requests. Please try again later.", { status: 429 });
+  }
+
   const [chainId, ...rest] = segments;
   const config = RELAYER_CONFIGS[chainId];
   if (!config) {
