@@ -18,15 +18,19 @@ Built with **Next.js 14 (App Router)**, **wagmi v2 + RainbowKit**, and the **`@z
 
 ---
 
-## Screenshots
+## Screenshots & UI Gallery
 
-<!-- Replace the placeholder URLs below with actual screenshot/GIF paths -->
+### Homepage & Features
+![Homepage](./screenshots/home.png)
+
+### Core DApp Interfaces
 
 | Registry Browser | Wrap / Unwrap | Decrypt Balance |
 |:---:|:---:|:---:|
-| ![Registry](YOUR_SCREENSHOT_REGISTRY.png) | ![Wrap](YOUR_SCREENSHOT_WRAP.png) | ![Decrypt](YOUR_SCREENSHOT_DECRYPT.png) |
+| ![Registry](./screenshots/registry.png) | ![Wrap](./screenshots/wrap.png) | ![Decrypt](./screenshots/decrypt.png) |
 
-> **How to add your screenshots:** Take a screenshot or GIF of each page, save the files in the repo root (e.g. `screenshots/registry.png`), then replace `YOUR_SCREENSHOT_REGISTRY.png` etc. with the relative path (e.g. `screenshots/registry.png`).
+### Testnet Token Faucet
+![Faucet](./screenshots/faucet.png)
 
 ---
 
