@@ -82,8 +82,8 @@ export function Navigation() {
         <div className="max-w-[1200px] mx-auto px-6 h-full flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <span className="text-xl font-bold text-[#1A1D20] dark:text-white tracking-tight">
-              ZARP Protocol
+            <span className="text-2xl font-bold text-[#1A1D20] dark:text-white tracking-tight">
+              ZARP PROTOCOL
             </span>
           </Link>
 

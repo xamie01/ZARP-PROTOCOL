@@ -113,162 +113,165 @@ export default function FaucetPage() {
         </div>
       </div>
 
-      <div className="max-w-[480px] mx-auto px-6 pb-20">
-        <ScrollReveal>
-          <div className="bg-white border border-[#E5E7E9] rounded-xl shadow-sm overflow-hidden">
-            {/* Testnet Banner */}
-            <div className="px-6 py-3 bg-[rgba(0,180,216,0.08)] border-b border-[rgba(0,180,216,0.15)] flex items-center gap-3">
-              <AlertTriangle className="w-4 h-4 text-[#00B4D8] flex-shrink-0" />
-              <p className="text-sm text-[#00B4D8]">
-                These are testnet tokens with no real value. For development and testing only.
-              </p>
-            </div>
-
-            {/* Wrong-network guard */}
-            {wrongNetwork && (
-              <div className="px-6 py-3 bg-[rgba(243,156,18,0.08)] border-b border-[rgba(243,156,18,0.2)] flex items-center justify-between gap-3">
-                <p className="text-sm text-[#B9770E] flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-                  The faucet is Sepolia-only. Switch networks to continue.
+      <div className="max-w-[1200px] mx-auto px-6 pb-20 flex flex-col lg:flex-row gap-12 items-start justify-center">
+        {/* Interactive Column */}
+        <div className="w-full lg:w-[480px] shrink-0">
+          <ScrollReveal>
+            <div className="bg-white border border-[#E5E7E9] rounded-xl shadow-sm overflow-hidden">
+              {/* Testnet Banner */}
+              <div className="px-6 py-3 bg-[rgba(0,180,216,0.08)] border-b border-[rgba(0,180,216,0.15)] flex items-center gap-3">
+                <AlertTriangle className="w-4 h-4 text-[#00B4D8] flex-shrink-0" />
+                <p className="text-sm text-[#00B4D8]">
+                  These are testnet tokens with no real value. For development and testing only.
                 </p>
-                <button
-                  onClick={() => switchChain({ chainId: SEPOLIA_CHAIN_ID })}
-                  className="shrink-0 rounded-lg border border-[#B9770E] px-3 py-1 text-xs font-semibold text-[#B9770E] hover:bg-[#B9770E] hover:text-white transition-colors"
-                >
-                  Switch to Sepolia
-                </button>
               </div>
-            )}
 
-            {/* Wallet Status */}
-            {!isConnected ? (
-              <div className="px-6 py-8 border-b border-[#F3F4F5] text-center">
-                <Wallet className="w-12 h-12 text-[#CDD0D4] mx-auto" strokeWidth={1.5} />
-                <h3 className="text-xl font-semibold text-[#4D535A] mt-4">Wallet Disconnected</h3>
-                <p className="text-sm text-[#A7ACB3] mt-1">Connect your wallet to request tokens</p>
-                <button onClick={openConnectModal} className="btn-primary mt-4 w-full">
-                  Connect Wallet
-                </button>
-              </div>
-            ) : (
-              <div className="px-6 py-4 border-b border-[#F3F4F5] flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Wallet className="w-5 h-5 text-[#4D535A]" />
-                  <span className="font-mono text-xs text-[#4D535A]">
-                    {address?.slice(0, 6)}...{address?.slice(-4)}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#2ECC71]" />
-                  <span className="text-xs text-[#A7ACB3]">Connected</span>
-                </div>
-              </div>
-            )}
-
-            {/* Token Selection */}
-            <div className="px-6 py-5">
-              <label className="text-xs text-[#A7ACB3] uppercase tracking-wider">Select Token</label>
-              <div className="grid grid-cols-2 gap-3 mt-3">
-                {ERC20_TOKENS.map((token, i) => (
+              {/* Wrong-network guard */}
+              {wrongNetwork && (
+                <div className="px-6 py-3 bg-[rgba(243,156,18,0.08)] border-b border-[rgba(243,156,18,0.2)] flex items-center justify-between gap-3">
+                  <p className="text-sm text-[#B9770E] flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                    The faucet is Sepolia-only. Switch networks to continue.
+                  </p>
                   <button
-                    key={token.symbol}
-                    onClick={() => setSelectedToken(i)}
-                    className={`flex flex-col items-center p-4 rounded-lg border text-center transition-all ${
-                      selectedToken === i
-                        ? "border-[#FFD100] border-l-[3px] bg-[rgba(255,209,0,0.04)]"
-                        : "border-[#E5E7E9] bg-[#FAFBFC] hover:border-[#FFD100]/50"
-                    }`}
+                    onClick={() => switchChain({ chainId: SEPOLIA_CHAIN_ID })}
+                    className="shrink-0 rounded-lg border border-[#B9770E] px-3 py-1 text-xs font-semibold text-[#B9770E] hover:bg-[#B9770E] hover:text-white transition-colors"
                   >
-                    <span className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FFD100] to-[#FFD100]/60 flex items-center justify-center text-[11px] font-bold text-black">
-                      {token.symbol[0]}
-                    </span>
-                    <span className="text-sm font-medium text-[#1A1D20] mt-2">{token.symbol}</span>
-                    <span className="text-[10px] text-[#A7ACB3]">ERC-20</span>
+                    Switch to Sepolia
                   </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Request Action */}
-            <div className="px-6 py-5 border-t border-[#F3F4F5]">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-[#A7ACB3]">You will receive</span>
-                <span className="text-base font-semibold text-[#1A1D20]">
-                  1,000 {selectedToken !== null ? ERC20_TOKENS[selectedToken].symbol : "---"}
-                </span>
-              </div>
-              <p className="text-xs text-[#A7ACB3] mt-1 flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                Limited to 1 request per token per 24 hours.
-              </p>
-              {selectedToken !== null && !wrongNetwork ? (
-                <TokenFaucetButton
-                  tokenIdx={selectedToken}
-                  selectedToken={selectedToken}
-                  isConnected={isConnected}
-                  openConnectModal={openConnectModal}
-                  onRequest={handleRequest}
-                  onStatusChange={handleStatusChange}
-                />
-              ) : (
-                <button
-                  disabled
-                  className="w-full py-3 rounded-lg text-sm font-semibold bg-[#F3F4F5] text-[#878D95] cursor-not-allowed mt-4"
-                >
-                  {!isConnected ? "Connect Wallet" : wrongNetwork ? "Switch to Sepolia" : "Select Token"}
-                </button>
+                </div>
               )}
-            </div>
 
-            {/* Transaction History */}
-            {requestHistory.length > 0 && (
-              <div className="px-6 py-5 border-t border-[#F3F4F5]">
-                <h4 className="text-lg font-semibold text-[#1A1D20] mb-3">Recent Requests</h4>
-                <div className="flex flex-col gap-2">
-                  {requestHistory.map((record) => (
-                    <div key={record.id} className="flex items-center justify-between px-3 py-2.5 bg-[#FAFBFC] rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-full bg-gradient-to-br from-[#FFD100] to-[#FFD100]/60 flex items-center justify-center text-[8px] font-bold text-black">
-                          {record.symbol[0]}
-                        </span>
-                        <span className="text-sm text-[#4D535A]">{record.symbol}</span>
-                      </div>
-                      <span className="font-mono text-xs text-[#656B73]">
-                        {record.amount} {record.symbol}
+              {/* Wallet Status */}
+              {!isConnected ? (
+                <div className="px-6 py-8 border-b border-[#F3F4F5] text-center">
+                  <Wallet className="w-12 h-12 text-[#CDD0D4] mx-auto" strokeWidth={1.5} />
+                  <h3 className="text-xl font-semibold text-[#4D535A] mt-4">Wallet Disconnected</h3>
+                  <p className="text-sm text-[#A7ACB3] mt-1">Connect your wallet to request tokens</p>
+                  <button onClick={openConnectModal} className="btn-primary mt-4 w-full">
+                    Connect Wallet
+                  </button>
+                </div>
+              ) : (
+                <div className="px-6 py-4 border-b border-[#F3F4F5] flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Wallet className="w-5 h-5 text-[#4D535A]" />
+                    <span className="font-mono text-xs text-[#4D535A]">
+                      {address?.slice(0, 6)}...{address?.slice(-4)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#2ECC71]" />
+                    <span className="text-xs text-[#A7ACB3]">Connected</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Token Selection */}
+              <div className="px-6 py-5">
+                <label className="text-xs text-[#A7ACB3] uppercase tracking-wider">Select Token</label>
+                <div className="grid grid-cols-2 gap-3 mt-3">
+                  {ERC20_TOKENS.map((token, i) => (
+                    <button
+                      key={token.symbol}
+                      onClick={() => setSelectedToken(i)}
+                      className={`flex flex-col items-center p-4 rounded-lg border text-center transition-all ${
+                        selectedToken === i
+                          ? "border-[#FFD100] border-l-[3px] bg-[rgba(255,209,0,0.04)]"
+                          : "border-[#E5E7E9] bg-[#FAFBFC] hover:border-[#FFD100]/50"
+                      }`}
+                    >
+                      <span className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FFD100] to-[#FFD100]/60 flex items-center justify-center text-[11px] font-bold text-black">
+                        {token.symbol[0]}
                       </span>
-                      <span
-                        className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                          record.status === "sent"
-                            ? "bg-[#2ECC71]/10 text-[#2ECC71]"
-                            : record.status === "pending"
-                            ? "bg-[#F39C12]/10 text-[#F39C12]"
-                            : "bg-[#E74C3C]/10 text-[#E74C3C]"
-                        }`}
-                      >
-                        {record.status === "sent" ? "Sent" : record.status === "pending" ? "Pending" : "Failed"}
-                      </span>
-                    </div>
+                      <span className="text-sm font-medium text-[#1A1D20] mt-2">{token.symbol}</span>
+                      <span className="text-[10px] text-[#A7ACB3]">ERC-20</span>
+                    </button>
                   ))}
                 </div>
               </div>
-            )}
-          </div>
-        </ScrollReveal>
 
-        {/* Available Tokens */}
-        <div className="mt-12">
+              {/* Request Action */}
+              <div className="px-6 py-5 border-t border-[#F3F4F5]">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-[#A7ACB3]">You will receive</span>
+                  <span className="text-base font-semibold text-[#1A1D20]">
+                    1,000 {selectedToken !== null ? ERC20_TOKENS[selectedToken].symbol : "---"}
+                  </span>
+                </div>
+                <p className="text-xs text-[#A7ACB3] mt-1 flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  Limited to 1 request per token per 24 hours.
+                </p>
+                {selectedToken !== null && !wrongNetwork ? (
+                  <TokenFaucetButton
+                    tokenIdx={selectedToken}
+                    selectedToken={selectedToken}
+                    isConnected={isConnected}
+                    openConnectModal={openConnectModal}
+                    onRequest={handleRequest}
+                    onStatusChange={handleStatusChange}
+                  />
+                ) : (
+                  <button
+                    disabled
+                    className="w-full py-3 rounded-lg text-sm font-semibold bg-[#F3F4F5] text-[#878D95] cursor-not-allowed mt-4"
+                  >
+                    {!isConnected ? "Connect Wallet" : wrongNetwork ? "Switch to Sepolia" : "Select Token"}
+                  </button>
+                )}
+              </div>
+
+              {/* Transaction History */}
+              {requestHistory.length > 0 && (
+                <div className="px-6 py-5 border-t border-[#F3F4F5]">
+                  <h4 className="text-lg font-semibold text-[#1A1D20] mb-3">Recent Requests</h4>
+                  <div className="flex flex-col gap-2">
+                    {requestHistory.map((record) => (
+                      <div key={record.id} className="flex items-center justify-between px-3 py-2.5 bg-[#FAFBFC] rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <span className="w-5 h-5 rounded-full bg-gradient-to-br from-[#FFD100] to-[#FFD100]/60 flex items-center justify-center text-[8px] font-bold text-black">
+                            {record.symbol[0]}
+                          </span>
+                          <span className="text-sm text-[#4D535A]">{record.symbol}</span>
+                        </div>
+                        <span className="font-mono text-xs text-[#656B73]">
+                          {record.amount} {record.symbol}
+                        </span>
+                        <span
+                          className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                            record.status === "sent"
+                              ? "bg-[#2ECC71]/10 text-[#2ECC71]"
+                              : record.status === "pending"
+                              ? "bg-[#F39C12]/10 text-[#F39C12]"
+                              : "bg-[#E74C3C]/10 text-[#E74C3C]"
+                          }`}
+                        >
+                          {record.status === "sent" ? "Sent" : record.status === "pending" ? "Pending" : "Failed"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </ScrollReveal>
+        </div>
+
+        {/* Available Tokens Column */}
+        <div className="w-full lg:flex-1 lg:max-w-[650px] flex flex-col gap-6 text-left mt-0">
           <ScrollReveal>
             <div className="mb-6">
               <span className="text-xs font-medium text-[#FFD100] uppercase tracking-[0.1em]">AVAILABLE TOKENS</span>
-              <h2 className="text-[32px] font-semibold text-[#1A1D20] tracking-tight mt-2">Faucet Tokens</h2>
-              <p className="text-base text-[#656B73] mt-2">All tokens available through the Sepolia testnet faucet.</p>
+              <h2 className="text-[32px] font-semibold text-[#1A1D20] dark:text-white tracking-tight mt-2">Faucet Tokens</h2>
+              <p className="text-base text-[#656B73] dark:text-[#A7ACB3] mt-2">All tokens available through the Sepolia testnet faucet.</p>
             </div>
           </ScrollReveal>
           <ScrollReveal>
             <div className="card-default p-0 overflow-x-auto">
               <table className="w-full min-w-[500px]">
                 <thead>
-                  <tr className="bg-[#F3F4F5]">
+                  <tr className="bg-[#F3F4F5] dark:bg-[#1D1D20]">
                     <th className="text-left px-4 py-3 text-xs font-medium text-[#A7ACB3] uppercase tracking-wider rounded-tl-xl">Token</th>
                     <th className="text-left px-4 py-3 text-xs font-medium text-[#A7ACB3] uppercase tracking-wider">Symbol</th>
                     <th className="text-left px-4 py-3 text-xs font-medium text-[#A7ACB3] uppercase tracking-wider">Type</th>
@@ -277,20 +280,20 @@ export default function FaucetPage() {
                 </thead>
                 <tbody>
                   {ERC20_TOKENS.map((token) => (
-                    <tr key={token.symbol} className="border-b border-[#F3F4F5] hover:bg-[rgba(255,209,0,0.04)] transition-colors">
+                    <tr key={token.symbol} className="border-b border-[#F3F4F5] dark:border-[#2A2D31] hover:bg-[rgba(255,209,0,0.04)] dark:hover:bg-[rgba(255,209,0,0.08)] transition-colors">
                       <td className="px-4 py-3">
-                        <span className="flex items-center gap-2 text-sm text-[#1A1D20]">
-                          <span className="w-5 h-5 rounded-full bg-gradient-to-br from-[#FFD100] to-[#FFD100]/60 flex items-center justify-center text-[8px] font-bold text-black">
+                        <span className="flex items-center gap-2 text-sm text-[#1A1D20] dark:text-white">
+                          <span className="w-5 h-5 rounded-full bg-gradient-to-br from-[#FFD100] to-[#FFD100]/60 flex items-center justify-center text-[8px] font-bold text-black flex-shrink-0">
                             {token.symbol[0]}
                           </span>
                           {token.symbol}
                         </span>
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs text-[#656B73]">{token.symbol}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-[#656B73] dark:text-[#A7ACB3]">{token.symbol}</td>
                       <td className="px-4 py-3">
-                        <span className="bg-[#F3F4F5] text-[#4D535A] text-xs font-medium px-2.5 py-0.5 rounded-full">ERC-20</span>
+                        <span className="bg-[#F3F4F5] dark:bg-[#1D1D20] text-[#4D535A] dark:text-[#CDD0D4] text-xs font-medium px-2.5 py-0.5 rounded-full">ERC-20</span>
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs text-[#656B73]">
+                      <td className="px-4 py-3 font-mono text-xs text-[#656B73] dark:text-[#A7ACB3]">
                         <span className="flex items-center relative">
                           {token.address.slice(0, 10)}...{token.address.slice(-6)}
                           <button

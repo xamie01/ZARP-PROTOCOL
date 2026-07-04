@@ -77,7 +77,7 @@ export function Footer() {
         {/* Row 2 */}
         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm font-medium text-[#A7ACB3]">
-            2026 ZARP Protocol. All rights reserved.
+            2026 ZARP PROTOCOL. All rights reserved.
           </p>
           <div className="flex gap-6">
             <a href="#" className="text-sm font-medium text-[#A7ACB3] hover:text-white transition-colors">

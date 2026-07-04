@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Wallet, Shield, Lock, ArrowUpDown, ChevronDown } from "lucide-react";
+import { Wallet, Shield, Lock, ChevronDown } from "lucide-react";
 import { useAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { parseUnits } from "viem";
+import { parseUnits, formatUnits } from "viem";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useWrap } from "@/hooks/useWrap";
 import { useChainPairs } from "@/hooks/useChainPairs";
@@ -29,7 +29,6 @@ export default function WrapPage() {
     isAllowed,
     decryptLoading,
     decryptConfidentialBalance,
-    decryptError,
     isLoading,
   } = useWrap();
 
@@ -60,7 +59,6 @@ export default function WrapPage() {
   );
 
   const currentTokens = activeTab === "shield" ? erc20Tokens : confidentialTokens;
-  const outputTokens = activeTab === "shield" ? confidentialTokens : erc20Tokens;
   const selectedIdx = state.selectedPair
     ? currentTokens.findIndex(
         (t) =>
@@ -69,7 +67,7 @@ export default function WrapPage() {
       )
     : -1;
   const selectedTokenData = selectedIdx >= 0 ? currentTokens[selectedIdx] : null;
-  const outputTokenData = selectedIdx >= 0 ? outputTokens[selectedIdx] : null;
+
 
   const handleTabChange = (tab: "shield" | "unshield") => {
     setActiveTab(tab);
@@ -146,266 +144,281 @@ export default function WrapPage() {
         </p>
       </div>
 
-      <div className="max-w-[480px] mx-auto px-6 pb-20">
-        <ScrollReveal>
-          <div className="bg-white dark:bg-[#0A0A0C] border border-[#E5E7E9] dark:border-[#2A2D31] rounded-xl shadow-sm overflow-hidden">
-            {/* Tabs */}
-            <div className="flex border-b border-[#E5E7E9] dark:border-[#2A2D31]">
-              {(["shield", "unshield"] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => handleTabChange(tab)}
-                  className={`flex-1 py-4 text-sm font-medium text-center transition-colors relative ${
-                    activeTab === tab
-                      ? "text-[#1A1D20] dark:text-white font-semibold"
-                      : "text-[#A7ACB3] dark:text-[#A7ACB3]/60 hover:text-[#4D535A] dark:hover:text-white"
-                  }`}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                  {activeTab === tab && (
-                    <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-[#FFD100] rounded-full" />
-                  )}
-                </button>
-              ))}
-            </div>
-
-            {/* Wallet Status */}
-            {!isConnected ? (
-              <div className="px-6 py-8 border-b border-[#F3F4F5] dark:border-[#1D1D20] text-center">
-                <Wallet className="w-12 h-12 text-[#CDD0D4] mx-auto" strokeWidth={1.5} />
-                <h3 className="text-xl font-semibold text-[#4D535A] dark:text-[#E5E7E9] mt-4">
-                  Wallet Disconnected
-                </h3>
-                <p className="text-sm text-[#A7ACB3] mt-1">
-                  Connect your wallet to shield or unshield tokens
-                </p>
-                <button onClick={openConnectModal} className="btn-primary mt-4 w-full">
-                  Connect Wallet
-                </button>
+      <div className="max-w-[1200px] mx-auto px-6 pb-20 flex flex-col lg:flex-row gap-12 items-start justify-center">
+        {/* Interactive Column */}
+        <div className="w-full lg:w-[480px] shrink-0">
+          <ScrollReveal>
+            <div className="bg-white dark:bg-[#0A0A0C] border border-[#E5E7E9] dark:border-[#2A2D31] rounded-xl shadow-sm overflow-hidden">
+              {/* Tabs */}
+              <div className="flex border-b border-[#E5E7E9] dark:border-[#2A2D31]">
+                {(["shield", "unshield"] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => handleTabChange(tab)}
+                    className={`flex-1 py-4 text-sm font-medium text-center transition-colors relative ${
+                      activeTab === tab
+                        ? "text-[#1A1D20] dark:text-white font-semibold"
+                        : "text-[#A7ACB3] dark:text-[#A7ACB3]/60 hover:text-[#4D535A] dark:hover:text-white"
+                    }`}
+                  >
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    {activeTab === tab && (
+                      <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-[#FFD100] rounded-full" />
+                    )}
+                  </button>
+                ))}
               </div>
-            ) : (
-              <div className="px-6 py-4 border-b border-[#F3F4F5] dark:border-[#1D1D20] flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Wallet className="w-5 h-5 text-[#4D535A] dark:text-[#CDD0D4]" />
-                  <span className="font-mono text-xs text-[#4D535A] dark:text-[#CDD0D4]">
-                    {address?.slice(0, 6)}...{address?.slice(-4)}
+
+              {/* Wallet Status */}
+              {!isConnected ? (
+                <div className="px-6 py-8 border-b border-[#F3F4F5] dark:border-[#1D1D20] text-center">
+                  <Wallet className="w-12 h-12 text-[#CDD0D4] mx-auto" strokeWidth={1.5} />
+                  <h3 className="text-xl font-semibold text-[#4D535A] dark:text-[#E5E7E9] mt-4">
+                    Wallet Disconnected
+                  </h3>
+                  <p className="text-sm text-[#A7ACB3] mt-1">
+                    Connect your wallet to shield or unshield tokens
+                  </p>
+                  <button onClick={openConnectModal} className="btn-primary mt-4 w-full">
+                    Connect Wallet
+                  </button>
+                </div>
+              ) : (
+                <div className="px-6 py-4 border-b border-[#F3F4F5] dark:border-[#1D1D20] flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Wallet className="w-5 h-5 text-[#4D535A] dark:text-[#CDD0D4]" />
+                    <span className="font-mono text-xs text-[#4D535A] dark:text-[#CDD0D4]">
+                      {address?.slice(0, 6)}...{address?.slice(-4)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#2ECC71]" />
+                    <span className="text-xs text-[#A7ACB3]">Connected</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Token Selection */}
+              <div className="px-6 py-5">
+                <label className="text-xs text-[#A7ACB3] uppercase tracking-wider">
+                  {activeTab === "shield" ? "From (Public)" : "From (Confidential)"}
+                </label>
+                <div className="relative mt-2">
+                  <button
+                    onClick={() => setTokenDropdownOpen(!tokenDropdownOpen)}
+                    className="w-full h-12 px-4 border-[1.5px] border-[#CDD0D4] dark:border-[#33383D] rounded-lg bg-white dark:bg-[#141416] text-left flex items-center justify-between focus:border-[#FFD100] outline-none transition-all hover:border-[#A7ACB3] dark:hover:border-[#4D535A]"
+                  >
+                    {selectedTokenData ? (
+                      <span className="flex items-center gap-2 text-sm font-medium text-[#1A1D20] dark:text-white">
+                        <span className="w-6 h-6 rounded-full bg-gradient-to-br from-[#FFD100] to-[#FFD100]/60 flex items-center justify-center text-[10px] font-bold text-black">
+                          {selectedTokenData.symbol[0]}
+                        </span>
+                        {selectedTokenData.symbol}
+                      </span>
+                    ) : (
+                      <span className="text-sm text-[#878D95]">Select token</span>
+                    )}
+                    <ChevronDown className="w-4 h-4 text-[#A7ACB3]" />
+                  </button>
+                  {tokenDropdownOpen && (
+                    <>
+                      <div className="fixed inset-0 z-10" onClick={() => setTokenDropdownOpen(false)} />
+                      <div className="absolute top-full mt-1 left-0 right-0 bg-white dark:bg-[#0A0A0C] border border-[#E5E7E9] dark:border-[#2A2D31] rounded-xl shadow-lg z-20 max-h-60 overflow-y-auto py-1">
+                        {currentTokens.map((token, i) => (
+                          <button
+                            key={token.symbol}
+                            onClick={() => handleTokenSelect(i)}
+                            className="w-full text-left px-4 py-2.5 text-sm hover:bg-[#F3F4F5] dark:hover:bg-[#1D1D20] transition-colors flex items-center gap-2"
+                          >
+                            <span className="w-6 h-6 rounded-full bg-gradient-to-br from-[#FFD100] to-[#FFD100]/60 flex items-center justify-center text-[10px] font-bold text-black flex-shrink-0">
+                              {token.symbol[0]}
+                            </span>
+                            <span className="text-[#1A1D20] dark:text-white font-medium">{token.symbol}</span>
+                            <span className="text-[#A7ACB3] font-mono text-xs ml-auto">
+                              {token.address.slice(0, 10)}...
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Amount Input */}
+                <div className="relative mt-3">
+                  <input
+                    type="text"
+                    spellCheck={false}
+                    placeholder="0.0"
+                    value={state.amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="w-full h-12 pl-4 pr-16 border-[1.5px] border-[#CDD0D4] dark:border-[#33383D] rounded-lg bg-white dark:bg-[#141416] text-[#1A1D20] dark:text-white font-mono text-sm focus:border-[#FFD100] focus:shadow-[0_0_0_3px_rgba(255,209,0,0.2)] outline-none transition-all"
+                  />
+                  <button
+                    onClick={() => {
+                      if (activeTab === "shield" && erc20Balance !== undefined) {
+                        setAmount(formatUnits(erc20Balance, selectedTokenData?.decimals ?? 18));
+                      } else if (activeTab === "unshield" && confidentialBalance !== undefined) {
+                        setAmount(formatUnits(confidentialBalance, selectedTokenData?.decimals ?? 18));
+                      }
+                    }}
+                    disabled={activeTab === "unshield" && !isAllowed}
+                    className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold px-2 py-1 rounded transition-colors ${
+                      activeTab === "unshield" && !isAllowed
+                        ? "text-[#A7ACB3] dark:text-[#A7ACB3]/40 cursor-not-allowed"
+                        : "text-[#FFD100] hover:bg-[#FFD100]/10"
+                    }`}
+                  >
+                    MAX
+                  </button>
+                </div>
+
+                {/* Balances & Warnings */}
+                <div className="flex justify-between items-center mt-2.5 px-0.5">
+                  <span className="text-xs text-[#A7ACB3] flex items-center gap-1">
+                    Balance: {
+                      activeTab === "unshield" && !isAllowed
+                        ? "Unauthorized (click Authorize Decryption below)"
+                        : balance
+                    }
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#2ECC71]" />
-                  <span className="text-xs text-[#A7ACB3]">Connected</span>
-                </div>
-              </div>
-            )}
 
-            {/* Token Selection */}
-            <div className="px-6 py-5">
-              <label className="text-xs text-[#A7ACB3] uppercase tracking-wider">
-                {activeTab === "shield" ? "From (Public)" : "From (Confidential)"}
-              </label>
-              <div className="relative mt-2">
-                <button
-                  onClick={() => setTokenDropdownOpen(!tokenDropdownOpen)}
-                  className="w-full h-12 px-4 border-[1.5px] border-[#CDD0D4] dark:border-[#33383D] rounded-lg bg-white dark:bg-[#141416] text-left flex items-center justify-between focus:border-[#FFD100] outline-none transition-all hover:border-[#A7ACB3] dark:hover:border-[#4D535A]"
-                >
-                  {selectedTokenData ? (
-                    <span className="flex items-center gap-2 text-sm font-medium text-[#1A1D20] dark:text-white">
-                      <span className="w-6 h-6 rounded-full bg-gradient-to-br from-[#FFD100] to-[#FFD100]/60 flex items-center justify-center text-[10px] font-bold text-black">
-                        {selectedTokenData.symbol[0]}
-                      </span>
-                      {selectedTokenData.symbol}
-                    </span>
-                  ) : (
-                    <span className="text-sm text-[#878D95]">Select token</span>
-                  )}
-                  <ChevronDown className="w-4 h-4 text-[#A7ACB3]" />
-                </button>
-                {tokenDropdownOpen && (
-                  <>
-                    <div className="fixed inset-0 z-10" onClick={() => setTokenDropdownOpen(false)} />
-                    <div className="absolute top-full mt-1 left-0 right-0 bg-white dark:bg-[#0A0A0C] border border-[#E5E7E9] dark:border-[#2A2D31] rounded-xl shadow-lg z-20 max-h-60 overflow-y-auto py-1">
-                      {currentTokens.map((token, i) => (
-                        <button
-                          key={token.symbol}
-                          onClick={() => handleTokenSelect(i)}
-                          className="w-full text-left px-4 py-2.5 text-sm hover:bg-[#F3F4F5] dark:hover:bg-[#1D1D20] transition-colors flex items-center gap-2"
-                        >
-                          <span className="w-6 h-6 rounded-full bg-gradient-to-br from-[#FFD100] to-[#FFD100]/60 flex items-center justify-center text-[10px] font-bold text-black flex-shrink-0">
-                            {token.symbol[0]}
-                          </span>
-                          <span className="text-[#1A1D20] dark:text-white font-medium">{token.symbol}</span>
-                          <span className="text-[#A7ACB3] font-mono text-xs ml-auto">
-                            {token.address.slice(0, 10)}...
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </>
+                {activeTab === "unshield" && !isAllowed && (
+                  <div className="mt-3 bg-[rgba(93,95,239,0.08)] border border-[rgba(93,95,239,0.15)] rounded-lg p-3">
+                    <p className="text-xs text-[#5D5FEF] leading-normal flex items-start gap-2">
+                      <Lock className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                      Sign a one-time authorization message in your wallet to decrypt your confidential balance. No gas required.
+                    </p>
+                  </div>
                 )}
               </div>
 
-              {/* Amount Input */}
-              <div className="relative mt-3">
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  placeholder="0.0"
-                  value={state.amount}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (/^\d*\.?\d*$/.test(val)) setAmount(val);
-                  }}
-                  className="w-full h-12 px-4 border-[1.5px] border-[#CDD0D4] dark:border-[#33383D] rounded-lg bg-white dark:bg-[#141416] text-[#1A1D20] dark:text-white text-base focus:border-[#FFD100] focus:shadow-[0_0_0_3px_rgba(255,209,0,0.2)] outline-none transition-all pr-16"
-                />
+              {/* Action Button & Status Info */}
+              <div className="px-6 py-5 border-t border-[#F3F4F5] dark:border-[#1D1D20]">
+                {state.error && (
+                  <div className="bg-[rgba(231,76,60,0.08)] border border-[rgba(231,76,60,0.15)] rounded-lg p-3 mb-4 text-xs text-[#E74C3C]">
+                    {state.error}
+                  </div>
+                )}
+
+                {isLoading && (
+                  <div className="flex flex-col gap-2.5 mb-4 bg-[#FAFBFC] dark:bg-[#141416]/50 border border-[#E5E7E9] dark:border-[#2A2D31] rounded-lg p-3">
+                    <div className="flex items-center justify-between text-xs font-semibold text-[#1A1D20] dark:text-white">
+                      <span>Status</span>
+                      <span className="capitalize">{state.phase}</span>
+                    </div>
+                    {state.txHash && (
+                      <a
+                        href={`https://sepolia.etherscan.io/tx/${state.txHash}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[11px] text-[#FFD100] hover:underline flex items-center gap-1 font-mono break-all"
+                      >
+                        {state.txHash.slice(0, 16)}...{state.txHash.slice(-8)} (View Etherscan)
+                      </a>
+                    )}
+                  </div>
+                )}
+
                 <button
-                  onClick={() => setAmount(balance)}
-                  disabled={activeTab === "unshield" && !isAllowed}
-                  className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-[#FFD100] ${
-                    activeTab === "unshield" && !isAllowed ? "opacity-40 cursor-not-allowed" : "hover:underline"
+                  onClick={handleAction}
+                  disabled={
+                    buttonState.disabled ||
+                    isLoading ||
+                    decryptLoading ||
+                    (isConnected && activeTab === "unshield" && isAllowed && !state.amount) ||
+                    (isConnected && activeTab === "shield" && !state.amount)
+                  }
+                  className={`w-full py-3 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
+                    buttonState.disabled ||
+                    isLoading ||
+                    decryptLoading ||
+                    (isConnected && activeTab === "unshield" && isAllowed && !state.amount) ||
+                    (isConnected && activeTab === "shield" && !state.amount)
+                      ? "bg-[#F3F4F5] dark:bg-[#1D1D20] text-[#878D95] dark:text-[#878D95]/60 cursor-not-allowed"
+                      : activeTab === "unshield" && !isAllowed
+                      ? "bg-[#5D5FEF] hover:bg-[#4D4FDF] text-white"
+                      : "btn-yellow"
                   }`}
                 >
-                  MAX
+                  {(isLoading || decryptLoading) && (
+                    <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin-loader" />
+                  )}
+                  {decryptLoading ? "Authorizing..." : buttonState.text}
                 </button>
-              </div>
-              <p className="text-xs text-[#A7ACB3] mt-1.5 flex items-center gap-1">
-                Balance:{" "}
-                {activeTab === "unshield" && !isAllowed ? (
-                  <span className="text-[#5D5FEF] font-medium">Unauthorized (click Authorize Decryption below)</span>
-                ) : state.selectedPair && balance === "0" && (activeTab === "shield" ? erc20Balance === undefined : confidentialBalance === undefined) ? (
-                  <span className="inline-block w-16 h-3 rounded bg-gradient-to-r from-[#E5E7E9] via-[#F3F4F5] to-[#E5E7E9] animate-pulse" />
-                ) : (
-                  balance
-                )}
-              </p>
-            </div>
-
-            {/* Direction Toggle */}
-            <div className="flex justify-center -my-3 relative z-10">
-              <button
-                onClick={() => handleTabChange(activeTab === "shield" ? "unshield" : "shield")}
-                className="w-10 h-10 rounded-full bg-white dark:bg-[#0A0A0C] border-[1.5px] border-black dark:border-white/20 flex items-center justify-center shadow-md hover:border-[#FFD100] hover:shadow-lg transition-all"
-              >
-                <ArrowUpDown className="w-5 h-5 text-[#4D535A]" />
-              </button>
-            </div>
-
-            {/* Output Section */}
-            <div className="px-6 py-5 bg-[#FAFBFC] dark:bg-[#0A0A0C]/50 border-t border-[#F3F4F5] dark:border-[#1D1D20]">
-              <label className={`text-xs uppercase tracking-wider ${activeTab === "shield" ? "text-[#5D5FEF]" : "text-[#A7ACB3]"}`}>
-                {activeTab === "shield" ? "To (Confidential)" : "To (Public)"}
-              </label>
-              <div className="mt-2 flex items-center gap-3">
-                {outputTokenData ? (
-                  <>
-                    <span className="w-6 h-6 rounded-full bg-gradient-to-br from-[#FFD100] to-[#FFD100]/60 flex items-center justify-center text-[10px] font-bold text-black">
-                      {outputTokenData.symbol[0]}
-                    </span>
-                    <span className="text-lg font-semibold text-[#1A1D20] dark:text-white">{outputTokenData.symbol}</span>
-                    {activeTab === "shield" && (
-                      <span className="bg-[rgba(93,95,239,0.15)] text-[#5D5FEF] text-xs font-medium px-2.5 py-0.5 rounded-full">
-                        Confidential
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <span className="text-sm text-[#878D95]">—</span>
+                {activeTab === "unshield" && (
+                  <p className="text-xs text-[#A7ACB3] mt-3 text-center flex items-center justify-center gap-1">
+                    <Lock className="w-3 h-3" />
+                     Two on-chain transactions: burn + finalize. Both are submitted automatically — just confirm each in your wallet.
+                  </p>
                 )}
               </div>
-              <p className="text-2xl font-semibold text-[#1A1D20] dark:text-white mt-2">{state.amount || "0.0"}</p>
-              <p className="text-xs text-[#A7ACB3] mt-1">1:1 wrapping ratio</p>
-            </div>
-
-            {/* Error */}
-            {(state.error || decryptError) && (
-              <div className="px-6 py-3 bg-[rgba(231,76,60,0.08)] border-t border-[rgba(231,76,60,0.15)]">
-                <p className="text-sm text-[#E74C3C]">{state.error || decryptError}</p>
-              </div>
-            )}
-
-            {/* Action Button */}
-            <div className="px-6 py-5 border-t border-[#F3F4F5] dark:border-[#1D1D20]">
-              <button
-                onClick={handleAction}
-                disabled={buttonState.disabled}
-                className={`w-full py-3 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
-                  buttonState.disabled
-                    ? "bg-[#F3F4F5] dark:bg-[#1D1D20] text-[#878D95] dark:text-[#878D95]/60 cursor-not-allowed"
-                    : "btn-yellow"
-                }`}
-              >
-                {(isLoading || decryptLoading) && (
-                  <span className="w-4 h-4 border-2 border-[#FFD100] border-t-transparent rounded-full animate-spin-loader" />
-                )}
-                {buttonState.text}
-              </button>
-              {activeTab === "unshield" && (
-                <p className="text-xs text-[#A7ACB3] mt-3 text-center flex items-center justify-center gap-1">
-                  <Lock className="w-3 h-3" />
-                   Two on-chain transactions: burn + finalize. Both are submitted automatically — just confirm each in your wallet.
-                </p>
-              )}
-            </div>
-          </div>
-        </ScrollReveal>
-
-        {/* Info Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-          <ScrollReveal delay={100}>
-            <div className="card-default flex flex-col">
-              <Shield className="w-6 h-6 text-[#FFD100]" strokeWidth={2} />
-              <h4 className="text-lg font-semibold text-[#1A1D20] mt-3">Shield</h4>
-              <p className="text-sm text-[#656B73] mt-1 leading-relaxed">
-                Approve the wrapper, then deposit your ERC-20 tokens. They become encrypted (confidential).
-              </p>
-            </div>
-          </ScrollReveal>
-          <ScrollReveal delay={200}>
-            <div className="card-default flex flex-col">
-              <Lock className="w-6 h-6 text-[#5D5FEF]" strokeWidth={2} />
-              <h4 className="text-lg font-semibold text-[#1A1D20] mt-3">Unshield</h4>
-              <p className="text-sm text-[#656B73] mt-1 leading-relaxed">
-                Withdraw your confidential ERC-7984 tokens back to public ERC-20. The wrapper burns your encrypted balance and requests decryption, then the relayer finalises the withdrawal and credits public tokens to your wallet. Both transactions are submitted automatically.
-              </p>
             </div>
           </ScrollReveal>
         </div>
 
-        {/* How It Works Steps */}
-        <div className="mt-16">
-          <ScrollReveal>
-            <div className="text-center mb-8">
-              <span className="text-xs font-medium text-[#FFD100] uppercase tracking-[0.1em]">HOW IT WORKS</span>
-              <h2 className="text-[32px] font-semibold text-[#1A1D20] tracking-tight mt-2">Wrapping Process</h2>
-            </div>
-          </ScrollReveal>
-          <div className="flex flex-col gap-6">
-            {[
-              {
-                num: "01",
-                title: "Approve the Wrapper",
-                desc: "Grant the wrapper contract permission to move your ERC-20 tokens. This is a standard ERC-20 approval transaction.",
-              },
-              {
-                num: "02",
-                title: "Deposit Your Tokens",
-                desc: "Send your ERC-20 tokens to the wrapper contract. The contract mints an equivalent amount of confidential ERC-7984 tokens to your address.",
-              },
-              {
-                num: "03",
-                title: "Your Balances Are Encrypted",
-                desc: "Your confidential token balances are now encrypted on-chain. Only you can decrypt and view them using your wallet signature.",
-              },
-            ].map((step, i) => (
-              <ScrollReveal key={step.num} delay={i * 100}>
-                <div className="flex gap-4 items-start">
-                  <span className="text-2xl font-semibold text-[#FFD100] w-10 flex-shrink-0">{step.num}</span>
-                  <div>
-                    <h4 className="text-lg font-semibold text-[#1A1D20]">{step.title}</h4>
-                    <p className="text-base text-[#656B73] mt-1 leading-relaxed">{step.desc}</p>
+        {/* Info & How It Works Column */}
+        <div className="w-full lg:flex-1 lg:max-w-[600px] flex flex-col gap-10 text-left mt-0">
+          {/* Info Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <ScrollReveal delay={100}>
+              <div className="card-default flex flex-col">
+                <Shield className="w-6 h-6 text-[#FFD100]" strokeWidth={2} />
+                <h4 className="text-lg font-semibold text-[#1A1D20] dark:text-white mt-3">Shield</h4>
+                <p className="text-sm text-[#656B73] dark:text-[#A7ACB3] mt-1 leading-relaxed">
+                  Approve the wrapper, then deposit your ERC-20 tokens. They become encrypted (confidential).
+                </p>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={200}>
+              <div className="card-default flex flex-col">
+                <Lock className="w-6 h-6 text-[#5D5FEF]" strokeWidth={2} />
+                <h4 className="text-lg font-semibold text-[#1A1D20] dark:text-white mt-3">Unshield</h4>
+                <p className="text-sm text-[#656B73] dark:text-[#A7ACB3] mt-1 leading-relaxed">
+                  Withdraw your confidential ERC-7984 tokens back to public ERC-20. The wrapper burns your encrypted balance and requests decryption, then the relayer finalises the withdrawal and credits public tokens to your wallet. Both transactions are submitted automatically.
+                </p>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          {/* How It Works Steps */}
+          <div>
+            <ScrollReveal>
+              <div className="text-left mb-6">
+                <span className="text-xs font-medium text-[#FFD100] uppercase tracking-[0.1em]">HOW IT WORKS</span>
+                <h2 className="text-[32px] font-semibold text-[#1A1D20] dark:text-white tracking-tight mt-2">Wrapping Process</h2>
+              </div>
+            </ScrollReveal>
+            <div className="flex flex-col gap-6">
+              {[
+                {
+                  num: "01",
+                  title: "Approve the Wrapper",
+                  desc: "Grant the wrapper contract permission to move your ERC-20 tokens. This is a standard ERC-20 approval transaction.",
+                },
+                {
+                  num: "02",
+                  title: "Deposit Your Tokens",
+                  desc: "Send your ERC-20 tokens to the wrapper contract. The contract mints an equivalent amount of confidential ERC-7984 tokens to your address.",
+                },
+                {
+                  num: "03",
+                  title: "Your Balances Are Encrypted",
+                  desc: "Your confidential token balances are now encrypted on-chain. Only you can decrypt and view them using your wallet signature.",
+                },
+              ].map((step, i) => (
+                <ScrollReveal key={step.num} delay={i * 100}>
+                  <div className="flex gap-4 items-start animate-fade-in-up">
+                    <span className="text-2xl font-semibold text-[#FFD100] w-10 flex-shrink-0">{step.num}</span>
+                    <div>
+                      <h4 className="text-lg font-semibold text-[#1A1D20] dark:text-white">{step.title}</h4>
+                      <p className="text-base text-[#656B73] dark:text-[#A7ACB3] mt-1 leading-relaxed">{step.desc}</p>
+                    </div>
                   </div>
-                </div>
-              </ScrollReveal>
-            ))}
+                </ScrollReveal>
+              ))}
+            </div>
           </div>
         </div>
       </div>
