@@ -150,8 +150,35 @@ export function useDecrypt(): UseDecryptReturn {
     try {
       /* Small delay to let the FHE WASM worker finish bootstrapping */
       await new Promise(r => setTimeout(r, 150));
-      /* Query the SDK directly to avoid stale closure from useIsAllowed */
-      const currentlyAllowed = await sdk.credentials.isAllowed([addr]).catch(() => false);
+      
+      /* Retry loop to wait for FHE worker/WASM readiness */
+      let currentlyAllowed = false;
+      let retries = 10;
+      while (retries > 0) {
+        try {
+          /* Query the SDK directly to avoid stale closure from useIsAllowed */
+          currentlyAllowed = await sdk.credentials.isAllowed([addr]);
+          break; // Success!
+        } catch (err) {
+          const errMsg = (err as Error)?.message || "";
+          if (
+            errMsg.includes("worker") ||
+            errMsg.includes("Worker") ||
+            errMsg.includes("WASM") ||
+            errMsg.includes("not initialized")
+          ) {
+            retries--;
+            await new Promise(r => setTimeout(r, 500)); // wait 500ms and retry
+          } else {
+            throw err; // Re-throw other errors (like connection or reject)
+          }
+        }
+      }
+
+      if (retries === 0) {
+        throw new Error("FHE engine is still loading. Please wait a moment and try again.");
+      }
+
       if (!currentlyAllowed) {
         await allow([addr]);
       }

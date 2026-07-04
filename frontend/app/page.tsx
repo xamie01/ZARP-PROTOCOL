@@ -184,7 +184,7 @@ export default function HomePage() {
                   <div className="w-12 h-12 flex items-center justify-center">
                     <feature.icon className={`w-7 h-7 ${feature.iconColor}`} strokeWidth={2} />
                   </div>
-                  <h3 className="text-xl font-semibold text-[#1A1D20] mt-4">{feature.title}</h3>
+                  <h3 className="text-xl font-semibold text-[#1A1D20] dark:text-white mt-4">{feature.title}</h3>
                   <p className="text-base text-[#656B73] mt-2 leading-relaxed flex-1">{feature.description}</p>
                   <Link
                     href={feature.link.href}
@@ -200,7 +200,7 @@ export default function HomePage() {
       </section>
 
       {/* ───── Token Pairs Preview ───── */}
-      <section className="py-20 px-6 bg-white border-y border-[#E5E7E9]">
+      <section className="py-20 px-6 bg-white dark:bg-[#000000] border-y border-[#E5E7E9] dark:border-[#2A2D31]">
         <div className="max-w-[1200px] mx-auto">
           <SectionTitle
             eyebrow="SUPPORTED TOKENS"
@@ -211,11 +211,11 @@ export default function HomePage() {
             <div className="flex gap-8 mt-8 mb-8">
               <div>
                 <span className="text-xs text-[#A7ACB3] uppercase tracking-wider">Total Pairs</span>
-                <p className="text-display-s text-[#1A1D20]">8</p>
+                <p className="text-display-s text-[#1A1D20] dark:text-white">8</p>
               </div>
               <div>
                 <span className="text-xs text-[#A7ACB3] uppercase tracking-wider">Valid Wrappers</span>
-                <p className="text-display-s text-[#1A1D20]">8</p>
+                <p className="text-display-s text-[#1A1D20] dark:text-white">8</p>
               </div>
               <div>
                 <span className="text-xs text-[#A7ACB3] uppercase tracking-wider">Network</span>
@@ -309,7 +309,7 @@ export default function HomePage() {
                     <span className="text-display-s text-[#FFD100]/40 font-semibold leading-none">
                       {step.number}
                     </span>
-                    <h3 className="text-xl font-semibold text-[#1A1D20] mt-2">{step.title}</h3>
+                    <h3 className="text-xl font-semibold text-[#1A1D20] dark:text-white mt-2">{step.title}</h3>
                     <p className="text-base text-[#656B73] mt-2 leading-relaxed">{step.description}</p>
                   </div>
                   <div className="absolute left-4 md:left-1/2 top-2 md:-translate-x-1/2 z-10">
@@ -328,7 +328,7 @@ export default function HomePage() {
       </section>
 
       {/* ───── Technical Overview ───── */}
-      <section className="py-20 px-6 bg-white border-t border-[#E5E7E9]">
+      <section className="py-20 px-6 bg-white dark:bg-[#000000] border-t border-[#E5E7E9] dark:border-[#2A2D31]">
         <div className="max-w-[1200px] mx-auto">
           <SectionTitle
             eyebrow="TECHNICAL DETAILS"
@@ -369,7 +369,7 @@ export default function HomePage() {
                       <feature.icon className={`w-5 h-5 ${feature.iconColor}`} strokeWidth={2} />
                     </div>
                     <div>
-                      <h4 className="text-lg font-semibold text-[#1A1D20]">{feature.title}</h4>
+                      <h4 className="text-lg font-semibold text-[#1A1D20] dark:text-white">{feature.title}</h4>
                       <p className="text-base text-[#656B73] mt-1 leading-relaxed">{feature.description}</p>
                     </div>
                   </div>

@@ -24,7 +24,12 @@ export default function WrapPage() {
     selectPair,
     erc20Balance,
     formattedErc20Balance,
+    confidentialBalance,
     formattedConfidentialBalance,
+    isAllowed,
+    decryptLoading,
+    decryptConfidentialBalance,
+    decryptError,
     isLoading,
   } = useWrap();
 
@@ -88,6 +93,10 @@ export default function WrapPage() {
       openConnectModal?.();
       return;
     }
+    if (activeTab === "unshield" && !isAllowed) {
+      await decryptConfidentialBalance();
+      return;
+    }
     if (!state.selectedPair || !state.amount) return;
     const amt = parseUnits(state.amount, state.selectedPair.decimals ?? 18);
     if (activeTab === "shield") {
@@ -100,6 +109,12 @@ export default function WrapPage() {
   const getButtonState = () => {
     if (!isConnected) return { text: "Connect Wallet", disabled: false };
     if (!state.selectedPair) return { text: "Select Token", disabled: true };
+    if (activeTab === "unshield" && !isAllowed) {
+      return {
+        text: decryptLoading ? "Authorizing..." : "Authorize Decryption",
+        disabled: decryptLoading,
+      };
+    }
     if (!state.amount) return { text: "Enter Amount", disabled: true };
     if (isLoading)
       return {
@@ -122,10 +137,10 @@ export default function WrapPage() {
         <span className="text-xs font-medium text-[#FFD100] uppercase tracking-[0.1em]">
           SHIELD & UNSHIELD
         </span>
-        <h1 className="text-[40px] font-semibold text-[#1A1D20] tracking-tight mt-2">
+        <h1 className="text-[40px] font-semibold text-[#1A1D20] dark:text-white tracking-tight mt-2">
           Wrap Tokens
         </h1>
-        <p className="text-base text-[#656B73] mt-3 max-w-[520px] mx-auto leading-relaxed">
+        <p className="text-base text-[#656B73] dark:text-[#A7ACB3] mt-3 max-w-[520px] mx-auto leading-relaxed">
           Convert public ERC-20 tokens to confidential ERC-7984 tokens (shield)
           or withdraw back to public (unshield).
         </p>
@@ -133,17 +148,17 @@ export default function WrapPage() {
 
       <div className="max-w-[480px] mx-auto px-6 pb-20">
         <ScrollReveal>
-          <div className="bg-white border border-[#E5E7E9] rounded-xl shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-[#0A0A0C] border border-[#E5E7E9] dark:border-[#2A2D31] rounded-xl shadow-sm overflow-hidden">
             {/* Tabs */}
-            <div className="flex border-b border-[#E5E7E9]">
+            <div className="flex border-b border-[#E5E7E9] dark:border-[#2A2D31]">
               {(["shield", "unshield"] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => handleTabChange(tab)}
                   className={`flex-1 py-4 text-sm font-medium text-center transition-colors relative ${
                     activeTab === tab
-                      ? "text-[#1A1D20] font-semibold"
-                      : "text-[#A7ACB3] hover:text-[#4D535A]"
+                      ? "text-[#1A1D20] dark:text-white font-semibold"
+                      : "text-[#A7ACB3] dark:text-[#A7ACB3]/60 hover:text-[#4D535A] dark:hover:text-white"
                   }`}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -156,9 +171,9 @@ export default function WrapPage() {
 
             {/* Wallet Status */}
             {!isConnected ? (
-              <div className="px-6 py-8 border-b border-[#F3F4F5] text-center">
+              <div className="px-6 py-8 border-b border-[#F3F4F5] dark:border-[#1D1D20] text-center">
                 <Wallet className="w-12 h-12 text-[#CDD0D4] mx-auto" strokeWidth={1.5} />
-                <h3 className="text-xl font-semibold text-[#4D535A] mt-4">
+                <h3 className="text-xl font-semibold text-[#4D535A] dark:text-[#E5E7E9] mt-4">
                   Wallet Disconnected
                 </h3>
                 <p className="text-sm text-[#A7ACB3] mt-1">
@@ -169,10 +184,10 @@ export default function WrapPage() {
                 </button>
               </div>
             ) : (
-              <div className="px-6 py-4 border-b border-[#F3F4F5] flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-[#F3F4F5] dark:border-[#1D1D20] flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Wallet className="w-5 h-5 text-[#4D535A]" />
-                  <span className="font-mono text-xs text-[#4D535A]">
+                  <Wallet className="w-5 h-5 text-[#4D535A] dark:text-[#CDD0D4]" />
+                  <span className="font-mono text-xs text-[#4D535A] dark:text-[#CDD0D4]">
                     {address?.slice(0, 6)}...{address?.slice(-4)}
                   </span>
                 </div>
@@ -191,10 +206,10 @@ export default function WrapPage() {
               <div className="relative mt-2">
                 <button
                   onClick={() => setTokenDropdownOpen(!tokenDropdownOpen)}
-                  className="w-full h-12 px-4 border-[1.5px] border-[#CDD0D4] rounded-lg bg-white text-left flex items-center justify-between focus:border-[#FFD100] outline-none transition-all hover:border-[#A7ACB3]"
+                  className="w-full h-12 px-4 border-[1.5px] border-[#CDD0D4] dark:border-[#33383D] rounded-lg bg-white dark:bg-[#141416] text-left flex items-center justify-between focus:border-[#FFD100] outline-none transition-all hover:border-[#A7ACB3] dark:hover:border-[#4D535A]"
                 >
                   {selectedTokenData ? (
-                    <span className="flex items-center gap-2 text-sm font-medium text-[#1A1D20]">
+                    <span className="flex items-center gap-2 text-sm font-medium text-[#1A1D20] dark:text-white">
                       <span className="w-6 h-6 rounded-full bg-gradient-to-br from-[#FFD100] to-[#FFD100]/60 flex items-center justify-center text-[10px] font-bold text-black">
                         {selectedTokenData.symbol[0]}
                       </span>
@@ -208,17 +223,17 @@ export default function WrapPage() {
                 {tokenDropdownOpen && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setTokenDropdownOpen(false)} />
-                    <div className="absolute top-full mt-1 left-0 right-0 bg-white border border-[#E5E7E9] rounded-xl shadow-lg z-20 max-h-60 overflow-y-auto py-1">
+                    <div className="absolute top-full mt-1 left-0 right-0 bg-white dark:bg-[#0A0A0C] border border-[#E5E7E9] dark:border-[#2A2D31] rounded-xl shadow-lg z-20 max-h-60 overflow-y-auto py-1">
                       {currentTokens.map((token, i) => (
                         <button
                           key={token.symbol}
                           onClick={() => handleTokenSelect(i)}
-                          className="w-full text-left px-4 py-2.5 text-sm hover:bg-[#F3F4F5] transition-colors flex items-center gap-2"
+                          className="w-full text-left px-4 py-2.5 text-sm hover:bg-[#F3F4F5] dark:hover:bg-[#1D1D20] transition-colors flex items-center gap-2"
                         >
                           <span className="w-6 h-6 rounded-full bg-gradient-to-br from-[#FFD100] to-[#FFD100]/60 flex items-center justify-center text-[10px] font-bold text-black flex-shrink-0">
                             {token.symbol[0]}
                           </span>
-                          <span className="text-[#1A1D20] font-medium">{token.symbol}</span>
+                          <span className="text-[#1A1D20] dark:text-white font-medium">{token.symbol}</span>
                           <span className="text-[#A7ACB3] font-mono text-xs ml-auto">
                             {token.address.slice(0, 10)}...
                           </span>
@@ -240,18 +255,23 @@ export default function WrapPage() {
                     const val = e.target.value;
                     if (/^\d*\.?\d*$/.test(val)) setAmount(val);
                   }}
-                  className="w-full h-12 px-4 border-[1.5px] border-[#CDD0D4] rounded-lg bg-white text-[#1A1D20] text-base focus:border-[#FFD100] focus:shadow-[0_0_0_3px_rgba(255,209,0,0.2)] outline-none transition-all pr-16"
+                  className="w-full h-12 px-4 border-[1.5px] border-[#CDD0D4] dark:border-[#33383D] rounded-lg bg-white dark:bg-[#141416] text-[#1A1D20] dark:text-white text-base focus:border-[#FFD100] focus:shadow-[0_0_0_3px_rgba(255,209,0,0.2)] outline-none transition-all pr-16"
                 />
                 <button
                   onClick={() => setAmount(balance)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-[#FFD100] hover:underline"
+                  disabled={activeTab === "unshield" && !isAllowed}
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-[#FFD100] ${
+                    activeTab === "unshield" && !isAllowed ? "opacity-40 cursor-not-allowed" : "hover:underline"
+                  }`}
                 >
                   MAX
                 </button>
               </div>
               <p className="text-xs text-[#A7ACB3] mt-1.5 flex items-center gap-1">
                 Balance:{" "}
-                {state.selectedPair && balance === "0" && erc20Balance === undefined ? (
+                {activeTab === "unshield" && !isAllowed ? (
+                  <span className="text-[#5D5FEF] font-medium">Unauthorized (click Authorize Decryption below)</span>
+                ) : state.selectedPair && balance === "0" && (activeTab === "shield" ? erc20Balance === undefined : confidentialBalance === undefined) ? (
                   <span className="inline-block w-16 h-3 rounded bg-gradient-to-r from-[#E5E7E9] via-[#F3F4F5] to-[#E5E7E9] animate-pulse" />
                 ) : (
                   balance
@@ -263,14 +283,14 @@ export default function WrapPage() {
             <div className="flex justify-center -my-3 relative z-10">
               <button
                 onClick={() => handleTabChange(activeTab === "shield" ? "unshield" : "shield")}
-                className="w-10 h-10 rounded-full bg-white border-[1.5px] border-black flex items-center justify-center shadow-md hover:border-[#FFD100] hover:shadow-lg transition-all"
+                className="w-10 h-10 rounded-full bg-white dark:bg-[#0A0A0C] border-[1.5px] border-black dark:border-white/20 flex items-center justify-center shadow-md hover:border-[#FFD100] hover:shadow-lg transition-all"
               >
                 <ArrowUpDown className="w-5 h-5 text-[#4D535A]" />
               </button>
             </div>
 
             {/* Output Section */}
-            <div className="px-6 py-5 bg-[#FAFBFC] border-t border-[#F3F4F5]">
+            <div className="px-6 py-5 bg-[#FAFBFC] dark:bg-[#0A0A0C]/50 border-t border-[#F3F4F5] dark:border-[#1D1D20]">
               <label className={`text-xs uppercase tracking-wider ${activeTab === "shield" ? "text-[#5D5FEF]" : "text-[#A7ACB3]"}`}>
                 {activeTab === "shield" ? "To (Confidential)" : "To (Public)"}
               </label>
@@ -280,7 +300,7 @@ export default function WrapPage() {
                     <span className="w-6 h-6 rounded-full bg-gradient-to-br from-[#FFD100] to-[#FFD100]/60 flex items-center justify-center text-[10px] font-bold text-black">
                       {outputTokenData.symbol[0]}
                     </span>
-                    <span className="text-lg font-semibold text-[#1A1D20]">{outputTokenData.symbol}</span>
+                    <span className="text-lg font-semibold text-[#1A1D20] dark:text-white">{outputTokenData.symbol}</span>
                     {activeTab === "shield" && (
                       <span className="bg-[rgba(93,95,239,0.15)] text-[#5D5FEF] text-xs font-medium px-2.5 py-0.5 rounded-full">
                         Confidential
@@ -291,29 +311,29 @@ export default function WrapPage() {
                   <span className="text-sm text-[#878D95]">—</span>
                 )}
               </div>
-              <p className="text-2xl font-semibold text-[#1A1D20] mt-2">{state.amount || "0.0"}</p>
+              <p className="text-2xl font-semibold text-[#1A1D20] dark:text-white mt-2">{state.amount || "0.0"}</p>
               <p className="text-xs text-[#A7ACB3] mt-1">1:1 wrapping ratio</p>
             </div>
 
             {/* Error */}
-            {state.error && (
+            {(state.error || decryptError) && (
               <div className="px-6 py-3 bg-[rgba(231,76,60,0.08)] border-t border-[rgba(231,76,60,0.15)]">
-                <p className="text-sm text-[#E74C3C]">{state.error}</p>
+                <p className="text-sm text-[#E74C3C]">{state.error || decryptError}</p>
               </div>
             )}
 
             {/* Action Button */}
-            <div className="px-6 py-5 border-t border-[#F3F4F5]">
+            <div className="px-6 py-5 border-t border-[#F3F4F5] dark:border-[#1D1D20]">
               <button
                 onClick={handleAction}
                 disabled={buttonState.disabled}
                 className={`w-full py-3 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
                   buttonState.disabled
-                    ? "bg-[#F3F4F5] text-[#878D95] cursor-not-allowed"
+                    ? "bg-[#F3F4F5] dark:bg-[#1D1D20] text-[#878D95] dark:text-[#878D95]/60 cursor-not-allowed"
                     : "btn-yellow"
                 }`}
               >
-                {isLoading && (
+                {(isLoading || decryptLoading) && (
                   <span className="w-4 h-4 border-2 border-[#FFD100] border-t-transparent rounded-full animate-spin-loader" />
                 )}
                 {buttonState.text}

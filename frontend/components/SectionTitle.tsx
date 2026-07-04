@@ -27,11 +27,11 @@ export default function SectionTitle({
       <span className="text-xs font-medium text-[#FFD100] uppercase tracking-[0.1em]">
         {eyebrow}
       </span>
-      <h2 className="text-[32px] font-semibold text-[#1A1D20] tracking-tight mt-2 leading-tight">
+      <h2 className="text-[32px] font-semibold text-[#1A1D20] dark:text-white tracking-tight mt-2 leading-tight">
         {title}
       </h2>
       {description && (
-        <p className="text-base text-[#656B73] mt-3 max-w-[560px] leading-relaxed">
+        <p className="text-base text-[#656B73] dark:text-[#A7ACB3] mt-3 max-w-[560px] leading-relaxed">
           {description}
         </p>
       )}

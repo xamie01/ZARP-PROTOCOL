@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Eye } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const PROTOCOL_LINKS = [
@@ -31,17 +30,16 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2">
-              <Eye className="w-8 h-8 text-[#FFD100]" />
-              <span className="text-2xl font-semibold tracking-tight">ZARP</span>
+              <span className="text-3xl font-bold tracking-tight">ZARP</span>
             </div>
-            <p className="text-sm text-[#A7ACB3] mt-3">
+            <p className="text-base font-medium text-[#A7ACB3] mt-3">
               Confidential Token Wrapping Protocol
             </p>
           </div>
 
           {/* Protocol */}
           <div>
-            <h4 className="text-xs font-medium text-[#A7ACB3] uppercase tracking-wider mb-4">
+            <h4 className="text-sm font-bold text-[#A7ACB3] uppercase tracking-wider mb-4">
               Protocol
             </h4>
             <div className="flex flex-col gap-2">
@@ -49,7 +47,7 @@ export function Footer() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-sm text-[#A7ACB3] hover:text-[#FFD100] transition-colors duration-300"
+                  className="text-base font-medium text-[#A7ACB3] hover:text-[#FFD100] transition-colors duration-300"
                 >
                   {link.label}
                 </Link>
@@ -59,7 +57,7 @@ export function Footer() {
 
           {/* Resources */}
           <div>
-            <h4 className="text-xs font-medium text-[#A7ACB3] uppercase tracking-wider mb-4">
+            <h4 className="text-sm font-bold text-[#A7ACB3] uppercase tracking-wider mb-4">
               Resources
             </h4>
             <div className="flex flex-col gap-2">
@@ -67,7 +65,7 @@ export function Footer() {
                 <a
                   key={link.label}
                   href={link.href}
-                  className="text-sm text-[#A7ACB3] hover:text-[#FFD100] transition-colors duration-300"
+                  className="text-base font-medium text-[#A7ACB3] hover:text-[#FFD100] transition-colors duration-300"
                 >
                   {link.label}
                 </a>
@@ -78,14 +76,14 @@ export function Footer() {
 
         {/* Row 2 */}
         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-[#A7ACB3]">
+          <p className="text-sm font-medium text-[#A7ACB3]">
             2026 ZARP Protocol. All rights reserved.
           </p>
           <div className="flex gap-6">
-            <a href="#" className="text-xs text-[#A7ACB3] hover:text-white transition-colors">
+            <a href="#" className="text-sm font-medium text-[#A7ACB3] hover:text-white transition-colors">
               Terms of Service
             </a>
-            <a href="#" className="text-xs text-[#A7ACB3] hover:text-white transition-colors">
+            <a href="#" className="text-sm font-medium text-[#A7ACB3] hover:text-white transition-colors">
               Privacy Policy
             </a>
           </div>

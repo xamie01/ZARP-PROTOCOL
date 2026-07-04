@@ -67,10 +67,10 @@ export default function DecryptPage() {
         <span className="text-xs font-medium text-[#FFD100] uppercase tracking-[0.1em]">
           BALANCE DECRYPTION
         </span>
-        <h1 className="text-[40px] font-semibold text-[#1A1D20] tracking-tight mt-2">
+        <h1 className="text-[40px] font-semibold text-[#1A1D20] dark:text-white tracking-tight mt-2">
           Decrypt Balance
         </h1>
-        <p className="text-base text-[#656B73] mt-3 max-w-[520px] mx-auto leading-relaxed">
+        <p className="text-base text-[#656B73] dark:text-[#A7ACB3] mt-3 max-w-[520px] mx-auto leading-relaxed">
           Reveal your confidential balance for any ERC-7984 token using EIP-712 signatures.
           Your balance stays private to you.
         </p>
@@ -78,12 +78,12 @@ export default function DecryptPage() {
 
       <div className="max-w-[480px] mx-auto px-6 pb-20">
         <ScrollReveal>
-          <div className="bg-white border border-[#E5E7E9] rounded-xl shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-[#0A0A0C] border border-[#E5E7E9] dark:border-[#2A2D31] rounded-xl shadow-sm overflow-hidden">
             {/* Wallet Status */}
             {!isConnected ? (
-              <div className="px-6 py-8 border-b border-[#F3F4F5] text-center">
+              <div className="px-6 py-8 border-b border-[#F3F4F5] dark:border-[#1D1D20] text-center">
                 <Wallet className="w-12 h-12 text-[#CDD0D4] mx-auto" strokeWidth={1.5} />
-                <h3 className="text-xl font-semibold text-[#4D535A] mt-4">Wallet Disconnected</h3>
+                <h3 className="text-xl font-semibold text-[#4D535A] dark:text-[#E5E7E9] mt-4">Wallet Disconnected</h3>
                 <p className="text-sm text-[#A7ACB3] mt-1">
                   Connect your wallet to decrypt confidential balances
                 </p>
@@ -92,10 +92,10 @@ export default function DecryptPage() {
                 </button>
               </div>
             ) : (
-              <div className="px-6 py-4 border-b border-[#F3F4F5] flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-[#F3F4F5] dark:border-[#1D1D20] flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Wallet className="w-5 h-5 text-[#4D535A]" />
-                  <span className="font-mono text-xs text-[#4D535A]">
+                  <Wallet className="w-5 h-5 text-[#4D535A] dark:text-[#CDD0D4]" />
+                  <span className="font-mono text-xs text-[#4D535A] dark:text-[#CDD0D4]">
                     {address?.slice(0, 6)}...{address?.slice(-4)}
                   </span>
                 </div>
@@ -115,7 +115,7 @@ export default function DecryptPage() {
             </div>
 
             {/* Paste any ERC-7984 address */}
-            <div className="px-6 py-5 border-b border-[#F3F4F5]">
+            <div className="px-6 py-5 border-b border-[#F3F4F5] dark:border-[#1D1D20]">
               <label className="text-xs text-[#A7ACB3] uppercase tracking-wider">
                 Decrypt any ERC-7984 token
               </label>
@@ -126,14 +126,14 @@ export default function DecryptPage() {
                   placeholder="0x… confidential token address"
                   value={customAddress}
                   onChange={(e) => setCustomAddress(e.target.value.trim())}
-                  className="flex-1 h-11 px-3 border-[1.5px] border-[#CDD0D4] rounded-lg bg-white text-[#1A1D20] font-mono text-xs focus:border-[#FFD100] focus:shadow-[0_0_0_3px_rgba(255,209,0,0.2)] outline-none transition-all"
+                  className="flex-1 h-11 px-3 border-[1.5px] border-[#CDD0D4] dark:border-[#33383D] rounded-lg bg-white dark:bg-[#141416] text-[#1A1D20] dark:text-white font-mono text-xs focus:border-[#FFD100] focus:shadow-[0_0_0_3px_rgba(255,209,0,0.2)] outline-none transition-all"
                 />
                 <button
                   onClick={decryptCustom}
                   disabled={isConnected && (!customValid || isLoading)}
                   className={`px-4 rounded-lg text-sm font-semibold transition-all ${
                     isConnected && (!customValid || isLoading)
-                      ? "bg-[#F3F4F5] text-[#878D95] cursor-not-allowed"
+                      ? "bg-[#F3F4F5] dark:bg-[#1D1D20] text-[#878D95] dark:text-[#878D95]/60 cursor-not-allowed"
                       : "btn-yellow"
                   }`}
                 >
@@ -166,8 +166,8 @@ export default function DecryptPage() {
                     disabled={isLoading}
                     className={`flex items-center justify-between px-4 py-3 rounded-lg border text-left transition-all disabled:opacity-50 ${
                       selectedToken === i
-                        ? "border-[#FFD100] border-l-[3px] bg-[rgba(255,209,0,0.04)]"
-                        : "border-[#E5E7E9] bg-[#FAFBFC] hover:border-[#FFD100]/50 hover:bg-[rgba(255,209,0,0.02)]"
+                        ? "border-[#FFD100] border-l-[3px] bg-[rgba(255,209,0,0.04)] dark:bg-[rgba(255,209,0,0.08)]"
+                        : "border-[#E5E7E9] dark:border-[#2A2D31] bg-[#FAFBFC] dark:bg-[#0A0A0C]/50 hover:border-[#FFD100]/50 hover:bg-[rgba(255,209,0,0.02)] dark:hover:bg-[rgba(255,209,0,0.04)]"
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -175,7 +175,7 @@ export default function DecryptPage() {
                         {token.symbol[1] || token.symbol[0]}
                       </span>
                       <div>
-                        <span className="text-sm font-medium text-[#1A1D20]">{token.symbol}</span>
+                        <span className="text-sm font-medium text-[#1A1D20] dark:text-white">{token.symbol}</span>
                         <span className="ml-2 bg-[rgba(93,95,239,0.15)] text-[#5D5FEF] text-[10px] font-medium px-2 py-0.5 rounded-full">
                           Confidential
                         </span>
@@ -189,7 +189,7 @@ export default function DecryptPage() {
 
             {/* Loading state */}
             {isLoading && (
-              <div className="px-6 py-4 border-t border-[#F3F4F5] flex items-center justify-center gap-2 text-sm text-[#4D535A]">
+              <div className="px-6 py-4 border-t border-[#F3F4F5] dark:border-[#1D1D20] flex items-center justify-center gap-2 text-sm text-[#4D535A] dark:text-[#CDD0D4]">
                 <span className="w-4 h-4 border-2 border-[#FFD100] border-t-transparent rounded-full animate-spin-loader" />
                 {step === "signing" ? "Sign in wallet..." : step === "polling" ? "Decrypting..." : "Submitting..."}
               </div>
@@ -218,14 +218,14 @@ export default function DecryptPage() {
 
             {/* Result Display */}
             {decryptedValue !== null && (
-              <div className="px-6 py-6 bg-[#FAFBFC] border-t border-[#F3F4F5]">
+              <div className="px-6 py-6 bg-[#FAFBFC] dark:bg-[#0A0A0C]/50 border-t border-[#F3F4F5] dark:border-[#1D1D20]">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="w-6 h-6 rounded-full bg-gradient-to-br from-[#5D5FEF] to-[#5D5FEF]/60 flex items-center justify-center text-[9px] font-bold text-white">
                     {(activeSymbol || "C")[1] || (activeSymbol || "C")[0]}
                   </span>
-                  <span className="text-lg font-semibold text-[#1A1D20]">{activeSymbol}</span>
+                  <span className="text-lg font-semibold text-[#1A1D20] dark:text-white">{activeSymbol}</span>
                 </div>
-                <p className="text-display-s text-[#1A1D20] mt-2">
+                <p className="text-display-s text-[#1A1D20] dark:text-white mt-2">
                   {formatBalance(decryptedValue, activeDecimals)}
                 </p>
                 <p className="text-xs text-[#A7ACB3] mt-1">Decrypted Balance</p>
@@ -258,7 +258,7 @@ export default function DecryptPage() {
           <ScrollReveal>
             <div className="text-center mb-10">
               <span className="text-xs font-medium text-[#FFD100] uppercase tracking-[0.1em]">HOW IT WORKS</span>
-              <h2 className="text-[32px] font-semibold text-[#1A1D20] tracking-tight mt-2">
+              <h2 className="text-[32px] font-semibold text-[#1A1D20] dark:text-white tracking-tight mt-2">
                 Decryption Process
               </h2>
             </div>
@@ -274,8 +274,8 @@ export default function DecryptPage() {
                   <div className={`w-12 h-12 rounded-full ${s.bg} flex items-center justify-center text-white`}>
                     <s.icon className="w-5 h-5" strokeWidth={2} />
                   </div>
-                  <h4 className="text-lg font-semibold text-[#1A1D20] mt-4">{s.title}</h4>
-                  <p className="text-sm text-[#656B73] mt-1 leading-relaxed">{s.desc}</p>
+                  <h4 className="text-lg font-semibold text-[#1A1D20] dark:text-white mt-4">{s.title}</h4>
+                  <p className="text-sm text-[#656B73] dark:text-[#A7ACB3] mt-1 leading-relaxed">{s.desc}</p>
                 </div>
               </ScrollReveal>
             ))}

@@ -20,6 +20,7 @@ import {
   useIsAllowed,
   useConfidentialBalance,
   matchZamaError,
+  useZamaSDK,
 } from "@zama-fhe/react-sdk";
 import type { Address } from "viem";
 
@@ -93,6 +94,7 @@ const initialState: WrapState = {
 export function useWrap(): UseWrapReturn {
   const [state, setState] = useState<WrapState>(initialState);
   const { address: userAddress } = useAccount();
+  const sdk = useZamaSDK();
 
   const tokenAddress = (state.selectedPair?.tokenAddress || "0x0000000000000000000000000000000000000000") as Address;
   const wrapperAddress = state.selectedPair?.confidentialTokenAddress as Address | undefined;
@@ -130,6 +132,32 @@ export function useWrap(): UseWrapReturn {
     setDecryptLoading(true);
     setDecryptError(undefined);
     try {
+      /* Retry loop to wait for FHE worker/WASM readiness */
+      let retries = 10;
+      while (retries > 0) {
+        try {
+          await sdk.credentials.isAllowed([wrapperAddress]);
+          break; // Success!
+        } catch (err) {
+          const errMsg = (err as Error)?.message || "";
+          if (
+            errMsg.includes("worker") ||
+            errMsg.includes("Worker") ||
+            errMsg.includes("WASM") ||
+            errMsg.includes("not initialized")
+          ) {
+            retries--;
+            await new Promise(r => setTimeout(r, 500)); // wait 500ms and retry
+          } else {
+            throw err;
+          }
+        }
+      }
+
+      if (retries === 0) {
+        throw new Error("FHE engine is still loading. Please wait a moment and try again.");
+      }
+
       await allow([wrapperAddress]);
       await refetchIsAllowed();
       await refetchConfidential();
@@ -142,7 +170,7 @@ export function useWrap(): UseWrapReturn {
     } finally {
       setDecryptLoading(false);
     }
-  }, [allow, wrapperAddress, refetchIsAllowed, refetchConfidential]);
+  }, [sdk, allow, wrapperAddress, refetchIsAllowed, refetchConfidential]);
 
   const { mutateAsync: shieldMutation } = useShield({
     tokenAddress,
@@ -167,6 +195,11 @@ export function useWrap(): UseWrapReturn {
     if (!state.selectedPair) return;
 
     try {
+      /* Preflight balance check */
+      if (erc20Balance !== undefined && amount > erc20Balance) {
+        throw new Error("INSUFFICIENT_ERC20_BALANCE");
+      }
+
       updatePhase("approving");
 
       await shieldMutation({
@@ -185,16 +218,25 @@ export function useWrap(): UseWrapReturn {
         INSUFFICIENT_ERC20_BALANCE: () => "Insufficient ERC-20 balance",
         APPROVAL_FAILED: () => "ERC-20 approval failed",
         TRANSACTION_REVERTED: (e) => `Shield failed: ${e.message}`,
-        _: () => (err as Error).message || "Shielding failed",
+        _: () => {
+          const errMsg = (err as Error).message;
+          if (errMsg === "INSUFFICIENT_ERC20_BALANCE") return "Insufficient ERC-20 balance";
+          return errMsg || "Shielding failed";
+        },
       });
       updatePhase("error", undefined, msg);
     }
-  }, [state.selectedPair, shieldMutation, updatePhase, refetchErc20, refetchConfidential]);
+  }, [state.selectedPair, erc20Balance, shieldMutation, updatePhase, refetchErc20, refetchConfidential]);
 
   const unshield = useCallback(async (amount: bigint) => {
     if (!state.selectedPair) return;
 
     try {
+      /* Preflight balance check */
+      if (confidentialBalance !== undefined && amount > confidentialBalance) {
+        throw new Error("INSUFFICIENT_CONFIDENTIAL_BALANCE");
+      }
+
       updatePhase("unwrapping");
 
       await unshieldMutation({
@@ -213,11 +255,15 @@ export function useWrap(): UseWrapReturn {
         INSUFFICIENT_CONFIDENTIAL_BALANCE: () => "Insufficient confidential balance",
         DECRYPTION_FAILED: () => "Decryption failed - check your authorization signature",
         TRANSACTION_REVERTED: (e) => `Unshield failed: ${e.message}`,
-        _: () => (err as Error).message || "Unshielding failed",
+        _: () => {
+          const errMsg = (err as Error).message;
+          if (errMsg === "INSUFFICIENT_CONFIDENTIAL_BALANCE") return "Insufficient confidential balance";
+          return errMsg || "Unshielding failed";
+        },
       });
       updatePhase("error", undefined, msg);
     }
-  }, [state.selectedPair, unshieldMutation, updatePhase, refetchErc20, refetchConfidential]);
+  }, [state.selectedPair, confidentialBalance, unshieldMutation, updatePhase, refetchErc20, refetchConfidential]);
 
   const resume = useCallback(async (unwrapTxHash: Hex) => {
     try {
