@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { FhevmProvider } from "@/providers/FhevmProvider";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
         </FhevmProvider>
         <div className="noise-overlay" />
+        <SpeedInsights />
       </body>
     </html>
   );

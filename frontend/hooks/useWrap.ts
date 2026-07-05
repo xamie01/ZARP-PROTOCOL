@@ -241,6 +241,7 @@ export function useWrap(): UseWrapReturn {
 
       await unshieldMutation({
         amount,
+        skipBalanceCheck: true,
         onUnwrapSubmitted: (hash) => updatePhase("unwrapping", hash),
         onFinalizing: () => updatePhase("finalizing"),
         onFinalizeSubmitted: (hash) => updatePhase("complete", hash),
