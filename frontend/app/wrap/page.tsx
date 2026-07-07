@@ -6,6 +6,7 @@ import { useAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { parseUnits, formatUnits } from "viem";
 import ScrollReveal from "@/components/ScrollReveal";
+import NetworkBanner from "@/components/NetworkBanner";
 import { useWrap } from "@/hooks/useWrap";
 import { useChainPairs } from "@/hooks/useChainPairs";
 
@@ -149,6 +150,7 @@ export default function WrapPage() {
         <div className="w-full lg:w-[480px] shrink-0">
           <ScrollReveal>
             <div className="bg-white dark:bg-[#0A0A0C] border border-[#E5E7E9] dark:border-[#2A2D31] rounded-xl shadow-sm overflow-hidden">
+              <NetworkBanner />
               {/* Tabs */}
               <div className="flex border-b border-[#E5E7E9] dark:border-[#2A2D31]">
                 {(["shield", "unshield"] as const).map((tab) => (

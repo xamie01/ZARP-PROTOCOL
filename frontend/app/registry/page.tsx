@@ -43,13 +43,13 @@ export default function RegistryPage() {
   return (
     <div className="min-h-screen pt-16">
       {/* Page Header */}
-      <div className="border-b border-[#E5E7E9]">
+      <div className="border-b border-[#E5E7E9] dark:border-[#2A2D31]">
         <div className="max-w-[1200px] mx-auto px-6 pt-28 pb-12">
           <span className="text-xs font-medium text-[#FFD100] uppercase tracking-[0.1em]">
             WRAPPER REGISTRY
           </span>
-          <h1 className="text-[40px] font-semibold text-[#1A1D20] tracking-tight mt-2">Registry</h1>
-          <p className="text-base text-[#656B73] mt-3 max-w-[640px] leading-relaxed">
+          <h1 className="text-[40px] font-semibold text-[#1A1D20] dark:text-white tracking-tight mt-2">Registry</h1>
+          <p className="text-base text-[#656B73] dark:text-[#A7ACB3] mt-3 max-w-[640px] leading-relaxed">
             Browse all registered ERC-20 to ERC-7984 confidential wrapper pairs.
             Search by token name, symbol, or contract address.
           </p>
@@ -63,7 +63,7 @@ export default function RegistryPage() {
                 </div>
                 <div>
                   <span className="text-xs text-[#A7ACB3] uppercase tracking-wider">Total Pairs</span>
-                  <p className="text-3xl font-semibold text-[#1A1D20]">
+                  <p className="text-3xl font-semibold text-[#1A1D20] dark:text-white">
                     <CountUp end={filteredPairs.length} duration={1.5} />
                   </p>
                 </div>
@@ -76,7 +76,7 @@ export default function RegistryPage() {
                 </div>
                 <div>
                   <span className="text-xs text-[#A7ACB3] uppercase tracking-wider">Valid Wrappers</span>
-                  <p className="text-3xl font-semibold text-[#1A1D20]">
+                  <p className="text-3xl font-semibold text-[#1A1D20] dark:text-white">
                     <CountUp end={filteredPairs.filter((p) => p.isValid).length} duration={1.5} />
                   </p>
                 </div>
@@ -98,21 +98,21 @@ export default function RegistryPage() {
       </div>
 
       {/* Search & Filter */}
-      <div className="sticky top-16 z-40 bg-[#F8F9FA]/95 backdrop-blur-md border-b border-[#E5E7E9]">
+      <div className="sticky top-16 z-40 bg-[#F8F9FA]/95 dark:bg-[#0A0A0C]/95 backdrop-blur-md border-b border-[#E5E7E9] dark:border-[#2A2D31]">
         <div className="max-w-[1200px] mx-auto px-6 py-4 flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#A7ACB3]" />
             <input
               type="text"
-              placeholder="Search by symbol or address..."
+              placeholder="Search by name, symbol, or address..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-12 pl-10 pr-4 border-[1.5px] border-[#CDD0D4] rounded-lg bg-white text-[#1A1D20] text-base focus:border-[#FFD100] focus:shadow-[0_0_0_3px_rgba(255,209,0,0.2)] outline-none transition-all"
+              className="w-full h-12 pl-10 pr-4 border-[1.5px] border-[#CDD0D4] dark:border-[#33383D] rounded-lg bg-white dark:bg-[#141416] text-[#1A1D20] dark:text-white text-base focus:border-[#FFD100] focus:shadow-[0_0_0_3px_rgba(255,209,0,0.2)] outline-none transition-all"
             />
             {search && (
               <button
                 onClick={() => setSearch("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A7ACB3] hover:text-[#1A1D20]"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A7ACB3] hover:text-[#1A1D20] dark:hover:text-white"
               >
                 ✕
               </button>
@@ -121,7 +121,7 @@ export default function RegistryPage() {
           <div className="relative">
             <button
               onClick={() => setChainDropdownOpen(!chainDropdownOpen)}
-              className="h-12 px-4 border-[1.5px] border-[#CDD0D4] rounded-lg bg-white text-[#1A1D20] text-sm min-w-[180px] flex items-center justify-between gap-2 focus:border-[#FFD100] outline-none transition-all"
+              className="h-12 px-4 border-[1.5px] border-[#CDD0D4] dark:border-[#33383D] rounded-lg bg-white dark:bg-[#141416] text-[#1A1D20] dark:text-white text-sm min-w-[180px] flex items-center justify-between gap-2 focus:border-[#FFD100] outline-none transition-all"
             >
               {chainLabel}
               <span className="text-[#A7ACB3]">▼</span>
@@ -129,7 +129,7 @@ export default function RegistryPage() {
             {chainDropdownOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setChainDropdownOpen(false)} />
-                <div className="absolute top-full mt-1 right-0 w-48 bg-white rounded-xl border border-[#E5E7E9] shadow-lg z-20 py-1">
+                <div className="absolute top-full mt-1 right-0 w-48 bg-white dark:bg-[#0A0A0C] rounded-xl border border-[#E5E7E9] dark:border-[#2A2D31] shadow-lg z-20 py-1">
                   {[
                     { label: "All Chains", value: "all" as const },
                     { label: "Sepolia", value: "sepolia" as const },
@@ -138,8 +138,8 @@ export default function RegistryPage() {
                     <button
                       key={opt.value}
                       onClick={() => { setChainFilter(opt.value); setChainDropdownOpen(false); }}
-                      className={`w-full text-left px-4 py-2.5 text-sm hover:bg-[#F3F4F5] transition-colors ${
-                        chainFilter === opt.value ? "text-[#1A1D20] font-medium bg-[#FFD100]/10" : "text-[#4D535A]"
+                      className={`w-full text-left px-4 py-2.5 text-sm hover:bg-[#F3F4F5] dark:hover:bg-[#1D1D20] transition-colors ${
+                        chainFilter === opt.value ? "text-[#1A1D20] dark:text-white font-medium bg-[#FFD100]/10" : "text-[#4D535A] dark:text-[#CDD0D4]"
                       }`}
                     >
                       {opt.label}
@@ -158,7 +158,7 @@ export default function RegistryPage() {
           <div className="card-default p-0 overflow-x-auto">
             <table className="w-full min-w-[800px]">
               <thead>
-                <tr className="bg-[#F3F4F5]">
+                <tr className="bg-[#F3F4F5] dark:bg-[#1D1D20]">
                   <th className="text-left px-4 py-3 text-xs font-medium text-[#A7ACB3] uppercase tracking-wider rounded-tl-xl">ERC-20 Symbol</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-[#A7ACB3] uppercase tracking-wider">ERC-20 Address</th>
                   <th className="text-left px-4 py-3 text-xs font-medium text-[#A7ACB3] uppercase tracking-wider">ERC-7984 Symbol</th>
@@ -189,27 +189,42 @@ export default function RegistryPage() {
                   </tr>
                 ) : (
                   filteredPairs.map((pair, i) => (
-                    <tr key={i} className="border-b border-[#F3F4F5] hover:bg-[rgba(255,209,0,0.04)] transition-colors">
+                    <tr key={i} className="border-b border-[#F3F4F5] dark:border-[#2A2D31] hover:bg-[rgba(255,209,0,0.04)] dark:hover:bg-[rgba(255,209,0,0.08)] transition-colors">
                       <td className="px-4 py-3.5">
-                        <span className="inline-flex items-center gap-2 bg-[#F3F4F5] text-[#4D535A] text-xs font-medium px-3 py-1 rounded-full">
+                        <span className="inline-flex items-center gap-2 bg-[#F3F4F5] dark:bg-[#1D1D20] text-[#4D535A] dark:text-[#CDD0D4] text-xs font-medium px-3 py-1 rounded-full">
                           <span className="w-5 h-5 rounded-full bg-gradient-to-br from-[#FFD100] to-[#FFD100]/60 flex items-center justify-center text-[8px] font-bold text-black">
                             {pair.erc20.symbol[0]}
                           </span>
                           {pair.erc20.symbol}
                         </span>
+                        {pair.erc20.name && (
+                          <span className="block text-[11px] text-[#A7ACB3] mt-1 pl-1">
+                            {pair.erc20.name}
+                          </span>
+                        )}
                       </td>
-                      <td className="px-4 py-3.5 font-mono text-xs text-[#656B73]">
+                      <td className="px-4 py-3.5 font-mono text-xs text-[#656B73] dark:text-[#A7ACB3]">
                         <span className="flex items-center">
                           {truncate(pair.erc20.address)}
                           <CopyButton text={pair.erc20.address} />
                         </span>
                       </td>
                       <td className="px-4 py-3.5">
-                        <span className="inline-flex items-center bg-[rgba(93,95,239,0.15)] text-[#5D5FEF] text-xs font-medium px-3 py-1 rounded-full">
-                          {pair.erc7984.symbol}
+                        <span className="inline-flex items-center gap-1.5">
+                          <span className="inline-flex items-center bg-[rgba(93,95,239,0.15)] text-[#5D5FEF] text-xs font-medium px-3 py-1 rounded-full">
+                            {pair.erc7984.symbol}
+                          </span>
+                          {!pair.isValid && (
+                            <span
+                              title="This wrapper has been revoked in the on-chain registry. Do not use it."
+                              className="inline-flex items-center bg-[rgba(231,76,60,0.12)] text-[#E74C3C] text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                            >
+                              Revoked
+                            </span>
+                          )}
                         </span>
                       </td>
-                      <td className="px-4 py-3.5 font-mono text-xs text-[#656B73]">
+                      <td className="px-4 py-3.5 font-mono text-xs text-[#656B73] dark:text-[#A7ACB3]">
                         <span className="flex items-center">
                           {truncate(pair.erc7984.address)}
                           <CopyButton text={pair.erc7984.address} />

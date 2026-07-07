@@ -2,15 +2,27 @@
 
 import { useMemo, useState } from "react";
 import { Wallet, Lock, Check, RefreshCw, MousePointer, PenLine, Eye } from "lucide-react";
-import { useAccount } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { isAddress, type Address } from "viem";
 import ScrollReveal from "@/components/ScrollReveal";
+import NetworkBanner from "@/components/NetworkBanner";
 import { useDecrypt } from "@/hooks/useDecrypt";
 import { useChainPairs } from "@/hooks/useChainPairs";
 
-/** Default decimals assumed for arbitrary (non-registry) ERC-7984 tokens. */
+/** Fallback decimals for arbitrary tokens that don't expose decimals(). */
 const DEFAULT_ERC7984_DECIMALS = 18;
+
+/** Minimal ABI to read a token's decimals() on-chain. */
+const decimalsAbi = [
+  {
+    name: "decimals",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint8" }],
+  },
+] as const;
 
 function formatBalance(val: bigint, decimals = 18) {
   const divisor = 10n ** BigInt(decimals);
@@ -36,11 +48,22 @@ export default function DecryptPage() {
   const [customAddress, setCustomAddress] = useState("");
 
   const customValid = isAddress(customAddress);
-  /* Decimals for the result: known pair's decimals, else default for pasted token. */
+
+  /* For a pasted (non-registry) token, read its decimals() on-chain so the
+   * decrypted balance is scaled correctly instead of assuming 18. */
+  const { data: customDecimals } = useReadContract({
+    address: customValid ? (customAddress as Address) : undefined,
+    abi: decimalsAbi,
+    functionName: "decimals",
+    query: { enabled: customValid },
+  });
+
+  /* Decimals for the result: known pair's decimals; for a pasted token, the
+   * on-chain decimals() if readable, else the 18-decimal fallback. */
   const activeDecimals =
     selectedToken !== null
       ? confidentialTokens[selectedToken]?.decimals ?? DEFAULT_ERC7984_DECIMALS
-      : DEFAULT_ERC7984_DECIMALS;
+      : customDecimals ?? DEFAULT_ERC7984_DECIMALS;
   const activeSymbol =
     selectedToken !== null ? confidentialTokens[selectedToken]?.symbol : "Custom token";
 
@@ -81,6 +104,7 @@ export default function DecryptPage() {
         <div className="w-full lg:w-[480px] shrink-0">
           <ScrollReveal>
             <div className="bg-white dark:bg-[#0A0A0C] border border-[#E5E7E9] dark:border-[#2A2D31] rounded-xl shadow-sm overflow-hidden">
+              <NetworkBanner />
               {/* Wallet Status */}
               {!isConnected ? (
                 <div className="px-6 py-8 border-b border-[#F3F4F5] dark:border-[#1D1D20] text-center">
@@ -146,7 +170,11 @@ export default function DecryptPage() {
                   <p className="text-xs text-[#E74C3C] mt-1.5">Enter a valid 0x address.</p>
                 )}
                 <p className="text-[11px] text-[#A7ACB3] mt-1.5">
-                  Balances of non-registry tokens are shown assuming {DEFAULT_ERC7984_DECIMALS} decimals.
+                  Decimals are read on-chain from the token
+                  {customValid && customDecimals !== undefined
+                    ? ` (${customDecimals} for this token)`
+                    : `, falling back to ${DEFAULT_ERC7984_DECIMALS} if unavailable`}
+                  .
                 </p>
               </div>
 

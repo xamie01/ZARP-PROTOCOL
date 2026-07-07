@@ -9,9 +9,15 @@
 
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ALL_STATIC_PAIRS } from "@/lib/registry-data";
+import { ALL_STATIC_PAIRS, CHAIN_NAMES } from "@/lib/registry-data";
 
 import { useListPairs } from "@zama-fhe/react-sdk";
+import {
+  mergeForBrowse,
+  normalizeOnchainItem,
+  normalizeStaticPair,
+  type NormalizedPair,
+} from "@/lib/registry-merge";
 
 /*************** Types ***************/
 
@@ -19,13 +25,7 @@ import { useListPairs } from "@zama-fhe/react-sdk";
 export type ChainFilter = "all" | "sepolia" | "mainnet";
 
 /** A registry pair with full metadata for display. */
-export interface DisplayPair {
-  erc20: { address: string; symbol: string; decimals: number };
-  erc7984: { address: string; symbol: string; decimals: number };
-  chainId: number;
-  chainName: string;
-  isValid: boolean;
-}
+export type DisplayPair = NormalizedPair;
 
 interface UseRegistryReturn {
   /** All unfiltered pairs. */
@@ -46,10 +46,7 @@ interface UseRegistryReturn {
 
 /*************** Constants ***************/
 
-const CHAIN_NAMES: Record<number, string> = {
-  1: "Mainnet",
-  11155111: "Sepolia",
-};
+const chainName = (id: number) => CHAIN_NAMES[id] ?? `Chain ${id}`;
 
 const CHAIN_IDS: Record<string, number> = {
   mainnet: 1,
@@ -95,53 +92,17 @@ export function useRegistry(): UseRegistryReturn {
 
   /** Normalize + MERGE on-chain and static pairs into DisplayPair format. */
   const pairs: DisplayPair[] = useMemo(() => {
-    /* Normalize on-chain SDK pairs (authoritative for whatever chain the SDK
-     * queried — typically only the connected chain). */
-    const onchain: DisplayPair[] = (sdkPairs?.items ?? [])
-      .map((item: any): DisplayPair => {
-        const chainId = item.chainId ?? 11155111;
-        return {
-          erc20: {
-            address: item.tokenAddress ?? "",
-            symbol: item.underlying?.symbol ?? item.symbol ?? "???",
-            decimals: item.underlying?.decimals ?? item.decimals ?? 18,
-          },
-          erc7984: {
-            address: item.confidentialTokenAddress ?? "",
-            symbol: item.confidential?.symbol ?? `c${item.underlying?.symbol ?? item.symbol ?? "???"}`,
-            decimals: item.confidential?.decimals ?? item.underlying?.decimals ?? item.decimals ?? 18,
-          },
-          chainId,
-          chainName: CHAIN_NAMES[chainId] ?? `Chain ${chainId}`,
-          isValid: item.isValid ?? true,
-        };
-      })
-      .filter((p) => p.erc7984.address);
-
-    /* Normalize static pairs (covers every chain — this is what keeps the
-     * mainnet pairs present even when useListPairs only returns Sepolia). */
-    const staticAll: DisplayPair[] = (staticPairs ?? ALL_STATIC_PAIRS).map((p) => ({
-      erc20: { address: p.erc20.address, symbol: p.erc20.symbol, decimals: p.erc20.decimals },
-      erc7984: { address: p.erc7984.address, symbol: p.erc7984.symbol, decimals: p.erc7984.decimals },
-      chainId: p.chainId,
-      chainName: CHAIN_NAMES[p.chainId] ?? `Chain ${p.chainId}`,
-      isValid: true,
-    }));
-
-    /* Merge: the verified static set is the stable base (always 7 Sepolia +
-     * 7 mainnet, so the mainnet filter is never empty and the count never
-     * shrinks). On-chain pairs are appended only when genuinely new. Dedup key
-     * = chainId + confidential address. */
-    const key = (p: DisplayPair) => `${p.chainId}:${p.erc7984.address.toLowerCase()}`;
-    const seen = new Set(staticAll.map(key));
-    const merged = [...staticAll];
-    for (const o of onchain) {
-      if (!seen.has(key(o))) {
-        seen.add(key(o));
-        merged.push(o);
-      }
-    }
-    return merged;
+    const onchain = (sdkPairs?.items ?? []).map((item) =>
+      /* Fallback chain id only used when the SDK omits one; defaults to Sepolia. */
+      normalizeOnchainItem(item, 11155111, chainName)
+    );
+    const staticAll = (staticPairs ?? ALL_STATIC_PAIRS).map((p) =>
+      normalizeStaticPair(p, chainName)
+    );
+    /* Browse merge: keep the stable static base, inherit on-chain isValid
+     * verdicts, and append genuinely-new on-chain pairs (revoked ones stay so
+     * they can be badged). See lib/registry-merge.ts. */
+    return mergeForBrowse(onchain, staticAll);
   }, [sdkPairs, staticPairs]);
 
   /** Apply search + chain filter. */
@@ -163,6 +124,8 @@ export function useRegistry(): UseRegistryReturn {
         (p) =>
           p.erc20.symbol.toLowerCase().includes(q) ||
           p.erc7984.symbol.toLowerCase().includes(q) ||
+          p.erc20.name?.toLowerCase().includes(q) ||
+          p.erc7984.name?.toLowerCase().includes(q) ||
           p.erc20.address.toLowerCase().includes(q) ||
           p.erc7984.address.toLowerCase().includes(q)
       );

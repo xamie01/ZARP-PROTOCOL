@@ -100,10 +100,10 @@ export default function FaucetPage() {
         <span className="text-xs font-medium text-[#FFD100] uppercase tracking-[0.1em]">
           TESTNET FAUCET
         </span>
-        <h1 className="text-[40px] font-semibold text-[#1A1D20] tracking-tight mt-2">
+        <h1 className="text-[40px] font-semibold text-[#1A1D20] dark:text-white tracking-tight mt-2">
           Token Faucet
         </h1>
-        <p className="text-base text-[#656B73] mt-3 max-w-[520px] mx-auto leading-relaxed">
+        <p className="text-base text-[#656B73] dark:text-[#A7ACB3] mt-3 max-w-[520px] mx-auto leading-relaxed">
           Request testnet tokens to try out the ZARP Protocol. Free tokens for Sepolia testnet.
         </p>
         <div className="mt-4 flex justify-center">
@@ -117,7 +117,7 @@ export default function FaucetPage() {
         {/* Interactive Column */}
         <div className="w-full lg:w-[480px] shrink-0">
           <ScrollReveal>
-            <div className="bg-white border border-[#E5E7E9] rounded-xl shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-[#0A0A0C] border border-[#E5E7E9] dark:border-[#2A2D31] rounded-xl shadow-sm overflow-hidden">
               {/* Testnet Banner */}
               <div className="px-6 py-3 bg-[rgba(0,180,216,0.08)] border-b border-[rgba(0,180,216,0.15)] flex items-center gap-3">
                 <AlertTriangle className="w-4 h-4 text-[#00B4D8] flex-shrink-0" />
@@ -144,19 +144,19 @@ export default function FaucetPage() {
 
               {/* Wallet Status */}
               {!isConnected ? (
-                <div className="px-6 py-8 border-b border-[#F3F4F5] text-center">
+                <div className="px-6 py-8 border-b border-[#F3F4F5] dark:border-[#1D1D20] text-center">
                   <Wallet className="w-12 h-12 text-[#CDD0D4] mx-auto" strokeWidth={1.5} />
-                  <h3 className="text-xl font-semibold text-[#4D535A] mt-4">Wallet Disconnected</h3>
+                  <h3 className="text-xl font-semibold text-[#4D535A] dark:text-[#E5E7E9] mt-4">Wallet Disconnected</h3>
                   <p className="text-sm text-[#A7ACB3] mt-1">Connect your wallet to request tokens</p>
                   <button onClick={openConnectModal} className="btn-primary mt-4 w-full">
                     Connect Wallet
                   </button>
                 </div>
               ) : (
-                <div className="px-6 py-4 border-b border-[#F3F4F5] flex items-center justify-between">
+                <div className="px-6 py-4 border-b border-[#F3F4F5] dark:border-[#1D1D20] flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Wallet className="w-5 h-5 text-[#4D535A]" />
-                    <span className="font-mono text-xs text-[#4D535A]">
+                    <Wallet className="w-5 h-5 text-[#4D535A] dark:text-[#CDD0D4]" />
+                    <span className="font-mono text-xs text-[#4D535A] dark:text-[#CDD0D4]">
                       {address?.slice(0, 6)}...{address?.slice(-4)}
                     </span>
                   </div>
@@ -177,14 +177,14 @@ export default function FaucetPage() {
                       onClick={() => setSelectedToken(i)}
                       className={`flex flex-col items-center p-4 rounded-lg border text-center transition-all ${
                         selectedToken === i
-                          ? "border-[#FFD100] border-l-[3px] bg-[rgba(255,209,0,0.04)]"
-                          : "border-[#E5E7E9] bg-[#FAFBFC] hover:border-[#FFD100]/50"
+                          ? "border-[#FFD100] border-l-[3px] bg-[rgba(255,209,0,0.04)] dark:bg-[rgba(255,209,0,0.08)]"
+                          : "border-[#E5E7E9] dark:border-[#2A2D31] bg-[#FAFBFC] dark:bg-[#0A0A0C]/50 hover:border-[#FFD100]/50"
                       }`}
                     >
                       <span className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FFD100] to-[#FFD100]/60 flex items-center justify-center text-[11px] font-bold text-black">
                         {token.symbol[0]}
                       </span>
-                      <span className="text-sm font-medium text-[#1A1D20] mt-2">{token.symbol}</span>
+                      <span className="text-sm font-medium text-[#1A1D20] dark:text-white mt-2">{token.symbol}</span>
                       <span className="text-[10px] text-[#A7ACB3]">ERC-20</span>
                     </button>
                   ))}
@@ -192,10 +192,10 @@ export default function FaucetPage() {
               </div>
 
               {/* Request Action */}
-              <div className="px-6 py-5 border-t border-[#F3F4F5]">
+              <div className="px-6 py-5 border-t border-[#F3F4F5] dark:border-[#1D1D20]">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs text-[#A7ACB3]">You will receive</span>
-                  <span className="text-base font-semibold text-[#1A1D20]">
+                  <span className="text-base font-semibold text-[#1A1D20] dark:text-white">
                     1,000 {selectedToken !== null ? ERC20_TOKENS[selectedToken].symbol : "---"}
                   </span>
                 </div>
@@ -224,18 +224,18 @@ export default function FaucetPage() {
 
               {/* Transaction History */}
               {requestHistory.length > 0 && (
-                <div className="px-6 py-5 border-t border-[#F3F4F5]">
-                  <h4 className="text-lg font-semibold text-[#1A1D20] mb-3">Recent Requests</h4>
+                <div className="px-6 py-5 border-t border-[#F3F4F5] dark:border-[#1D1D20]">
+                  <h4 className="text-lg font-semibold text-[#1A1D20] dark:text-white mb-3">Recent Requests</h4>
                   <div className="flex flex-col gap-2">
                     {requestHistory.map((record) => (
-                      <div key={record.id} className="flex items-center justify-between px-3 py-2.5 bg-[#FAFBFC] rounded-lg">
+                      <div key={record.id} className="flex items-center justify-between px-3 py-2.5 bg-[#FAFBFC] dark:bg-[#141416] rounded-lg">
                         <div className="flex items-center gap-2">
                           <span className="w-5 h-5 rounded-full bg-gradient-to-br from-[#FFD100] to-[#FFD100]/60 flex items-center justify-center text-[8px] font-bold text-black">
                             {record.symbol[0]}
                           </span>
-                          <span className="text-sm text-[#4D535A]">{record.symbol}</span>
+                          <span className="text-sm text-[#4D535A] dark:text-[#CDD0D4]">{record.symbol}</span>
                         </div>
-                        <span className="font-mono text-xs text-[#656B73]">
+                        <span className="font-mono text-xs text-[#656B73] dark:text-[#A7ACB3]">
                           {record.amount} {record.symbol}
                         </span>
                         <span
