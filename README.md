@@ -143,14 +143,47 @@ To surface a pair the registry does not (yet) list — e.g. a token you deployed
 // frontend/lib/registry-data.ts
 export const CUSTOM_PAIRS: WrapperPairConfig[] = [
   {
-    erc20:   { address: "0xYourErc20Address",   symbol: "FOO",  decimals: 18 },
-    erc7984: { address: "0xYourWrapperAddress", symbol: "cFOO", decimals: 18 },
+    erc20:   { address: "0xYourErc20Address",   symbol: "FOO",  decimals: 18, name: "Foo Token" },
+    erc7984: { address: "0xYourWrapperAddress", symbol: "cFOO", decimals: 18, name: "Confidential Foo" },
     chainId: 11155111, // 11155111 = Sepolia, 1 = mainnet
   },
 ];
 ```
 
-That's it. The pair is merged into the registry browse, the wrap/unwrap token list, and the decrypt picker for the matching chain (on-chain entries take precedence on address collisions). No rebuild of any other file is needed. To register a pair **on-chain** instead, submit it to the WrappersRegistry contract per the Zama Protocol docs; it will then appear via path (1).
+`name` is **optional** — when present it renders under the symbol in the registry table and is searchable; omit it and only the symbol shows. That's the only field added beyond `address`/`symbol`/`decimals`.
+
+That's it — no rebuild of any other file is needed. The pair is merged into the registry browse, the wrap/unwrap token list, and the decrypt picker for the matching chain. Two nuances worth knowing:
+
+- **How on-chain and local entries reconcile on an address collision.** In the **wrap/unwrap and decrypt selectors**, a valid on-chain entry wins over the local one. In the **registry browse table**, the local row stays the display base and only the on-chain `isValid` verdict is overlaid onto it (the on-chain symbol/name aren't swapped in) — so your locally-declared metadata is what users see there.
+- **Revocation is enforced.** If a wrapper you list in `CUSTOM_PAIRS` is *also* marked `isValid: false` in the on-chain registry, it is **excluded from the wrap/unwrap and decrypt selectors** (you can't act on a revoked wrapper) and shown with a **"Revoked" badge** in the browse table. This is deliberate — don't be surprised if a revoked custom pair doesn't appear in the wrap picker.
+
+To register a pair **on-chain** instead, submit it to the WrappersRegistry contract per the Zama Protocol docs; it will then appear via path (1).
+
+---
+
+## Testing out-of-registry decryption (`demo-token/`)
+
+The Decrypt page can reveal the balance of **any** ERC-7984 token by pasting its address — not
+just registry tokens. Every confidential balance you can easily obtain on Sepolia (the faucet
+cTokenMocks) lives in a wrapper that's **already registered**, so to exercise the *out-of-registry*
+path you need a confidential token the registry doesn't list.
+
+The **`demo-token/`** folder is a small, isolated Hardhat project for exactly this: a standalone
+ERC-7984 (FHEVM v0.11, 6 decimals) with a permissionless `mint`, so you can give your own wallet a
+decryptable balance and paste the address into the app. It is deliberately **not** registered
+on-chain and **not** added to `CUSTOM_PAIRS`.
+
+```bash
+cd demo-token
+npm install
+cp .env.example .env      # set PRIVATE_KEY + RPC_URL
+npm run deploy:sepolia    # deploys + mints 5.00 zDEMO to your wallet, prints the address
+```
+
+Then open the app → **Decrypt** → connect that wallet → paste the printed address → sign the
+EIP-712 prompt → the balance (5.00) decrypts client-side. It's kept in its own workspace because
+the Hardhat toolchain pins `@zama-fhe/relayer-sdk@0.4.1` exact, which conflicts with the frontend's
+`@zama-fhe/sdk@^3`. Full walkthrough: [`demo-token/README.md`](./demo-token/README.md).
 
 ---
 
@@ -174,7 +207,17 @@ frontend/
 │  └─ faucet.ts          # faucet ABI/helpers
 ├─ providers/FhevmProvider.tsx          # wagmi → QueryClient → ZamaProvider
 └─ next.config.mjs                       # COOP/COEP headers for FHE WASM
+
+demo-token/                              # isolated Hardhat project (see below)
+├─ contracts/DemoConfidentialToken.sol   # standalone ERC-7984, open mint (6 decimals)
+├─ scripts/deploy.ts, mint.ts            # deploy + mint a decryptable balance
+└─ hardhat.config.ts                     # FHEVM v0.11 toolchain
 ```
+
+> The app itself ships **no** smart contracts — all production contracts are external
+> (WrappersRegistry, tokens, faucet). `demo-token/` is a **separate, optional** helper used
+> only to produce a token for the out-of-registry decrypt demo (see below); it is not part of
+> the app runtime.
 
 ---
 

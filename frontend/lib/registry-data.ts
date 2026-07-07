@@ -167,14 +167,21 @@ export const MAINNET_PAIRS: WrapperPairConfig[] = [
 
 /**
  * Custom or dev-only pairs declared locally. These are MERGED with the
- * on-chain registry pairs at runtime. Add an entry here to surface a pair the
- * registry does not (yet) list. See README "Adding a new pair".
+ * on-chain registry pairs at runtime (see lib/registry-merge.ts). Add an entry
+ * here to surface a pair the registry does not (yet) list. See README
+ * "Adding a new pair".
+ *
+ * `name` is optional; when present it renders under the symbol in the registry
+ * table and is searchable. On an address collision, a valid on-chain entry wins
+ * in the wrap/decrypt selectors, while the browse table keeps this local row and
+ * only inherits the on-chain isValid verdict. A pair also revoked on-chain
+ * (isValid=false) is excluded from the selectors and badged "Revoked" in browse.
  *
  * @example
  * export const CUSTOM_PAIRS: WrapperPairConfig[] = [
  *   {
- *     erc20:   { address: "0xUnderlying...", symbol: "FOO",  decimals: 18 },
- *     erc7984: { address: "0xWrapper...",    symbol: "cFOO", decimals: 18 },
+ *     erc20:   { address: "0xUnderlying...", symbol: "FOO",  decimals: 18, name: "Foo Token" },
+ *     erc7984: { address: "0xWrapper...",    symbol: "cFOO", decimals: 18, name: "Confidential Foo" },
  *     chainId: 11155111,
  *   },
  * ];
